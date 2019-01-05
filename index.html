@@ -573,7 +573,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/05/ch09 顺序容器/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/05/ch08 IO库/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jinghua Ren">
@@ -592,7 +592,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/01/05/ch09 顺序容器/" itemprop="url">第九章 顺序容器</a></h1>
+                <a class="post-title-link" href="/2019/01/05/ch08 IO库/" itemprop="url">第八章 IO库</a></h1>
         
 
         <div class="post-meta">
@@ -645,101 +645,85 @@
         
           
             <hr>
-<h2 id="顺序容器概览"><a href="#顺序容器概览" class="headerlink" title="顺序容器概览"></a>顺序容器概览</h2><p>顺序容器有：vector, deque, list, forward_list, array, string。见p292表9.1。</p>
-<p>所有顺序容器都提供了快速顺序访问元素的能力。但是，这些容器在以下方面都有不同的性能折中：</p>
+<h2 id="IO类"><a href="#IO类" class="headerlink" title="IO类"></a>IO类</h2><p>为了支持不同种类的IO处理操作，标准库定义了这几种类型：</p>
 <ul>
-<li><p>向容器添加或从元素中删除元素的代价</p>
+<li><p>iostream 定义了用于读写流的基本类型</p>
 </li>
-<li><p>非顺序访问容器中元素的代价</p>
+<li><p>fstream 定义了读写命名文件的类型</p>
+</li>
+<li><p>sstream 定义了读写内存string对象的类型</p>
 </li>
 </ul>
-<p>string和vector将元素保存在连续的内存空间中。由于元素是连续存储的，由元素的下标来计算其地址是非常快速的。但是，在其中间添加或删除元素就会非常耗时，因为这需要移动插入或删除位置之后的所有元素。而且，添加元素可能导致分配额外的存储空间，这种情况下，每个元素都会移动到新的存储空间中。</p>
-<p>list和forward_list两个容器添加和删除操作都很快速。作为代价，它们不支持元素的随机访问，为了访问一个元素，只能遍历整个容器。与vector、deque和array相比，这两个容器的额外内存开销也很大。</p>
-<p>deque支持快速随机访问，在deque的中间位置插入或删除元素的代价（可能）很高。但是，在deque的两端添加或删除元素都是很快的。</p>
-<p><strong>确定使用哪种容器</strong></p>
-<p>!!!tip<br>​    通常，使用vector是最好的选择，除非你有很好的理由选择其他容器。</p>
-<p>见书本p293的详细讨论。</p>
-<h2 id="容器库概览"><a href="#容器库概览" class="headerlink" title="容器库概览"></a>容器库概览</h2><p>容器类型上的操作形成了一种层次：</p>
+<p>它们分别定义在同名的头文件中。</p>
+<p><strong>IO类型间的关系</strong></p>
+<p>类型ifstream和istringstream都继承自istream。我们可以像使用istream对象一样来使用它们。对于ostream也是如此。</p>
+<h3 id="IO对象无拷贝或赋值"><a href="#IO对象无拷贝或赋值" class="headerlink" title="IO对象无拷贝或赋值"></a>IO对象无拷贝或赋值</h3><p>由于不能拷贝IO对象，因此也不能将形参或返回类型设置为流类型。进行IO操作的函数通常以引用方式传递或返回流。</p>
+<p>读写一个IO对象会改变其状态，因此传递和返回的引用不能是const的。</p>
+<h3 id="条件状态"><a href="#条件状态" class="headerlink" title="条件状态"></a>条件状态</h3><p>IO类定义了一些函数和标志，可以帮助我们访问和操纵流的条件状态。见p279。</p>
+<p>一个IO错误的例子：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> ival;</span><br><span class="line"><span class="built_in">cin</span> &gt;&gt; ival;</span><br></pre></td></tr></table></figure>
+<p>如果试图在标准输入上键入Boo，读操作就会失败，cin进入错误状态。</p>
+<p>如果输入一个文件结束符标识，cin也会进入错误状态。</p>
+<p>一个流一旦发生错误，其上后续的IO操作都会失败。确定一个流对象的状态的最简单的方法是将它当作一个条件来使用：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="built_in">cin</span> &gt;&gt; word)</span><br><span class="line">    <span class="comment">// ok</span></span><br></pre></td></tr></table></figure>
+<h3 id="管理输出缓冲"><a href="#管理输出缓冲" class="headerlink" title="管理输出缓冲"></a>管理输出缓冲</h3><p>每个输出流都管理一个缓冲区，用来保存程序读写的数据。如果执行下面的代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">os &lt;&lt; <span class="string">"please enter a value: "</span>;</span><br></pre></td></tr></table></figure>
+<p>文本串可能立即打印出来，但也有可能被操作系统保存在缓冲区中，随后再打印。这样可以带来很大的性能提升。</p>
+<p>导致缓冲区刷新的原因有：</p>
 <ul>
-<li><p>某些操作是通用的，见表9.2，295页。</p>
+<li><p>程序正常结束</p>
 </li>
-<li><p>某些操作仅针对顺序容器（表9.3，299页）、关联容器（表11.7，388页）或无序容器（表11.8，395页）。</p>
+<li><p>缓冲区满时</p>
 </li>
-<li><p>还有一些操作只适用于一小部分容器。</p>
+<li><p>使用操纵符，如endl，来显式刷新缓冲区</p>
+</li>
+<li><p>读cin或写cerr，都会导致cout的缓冲区被刷新</p>
 </li>
 </ul>
-<h3 id="迭代器"><a href="#迭代器" class="headerlink" title="迭代器"></a>迭代器</h3><p>迭代器有着公共的接口：如果一个迭代器提供某个操作，那么所有提供相同操作的迭代器对这个操作的实现方式都是相同的。比如解引用操作。</p>
-<p>表3.6（96页）列出了容器迭代器支持的所有操作。表3.7（99页）列出了迭代器支持的算术运算，这些运算只能应用于string、vector、deque和array。</p>
-<p><strong>迭代器范围</strong></p>
-<p>迭代器范围由一对迭代器表示，通常被称为begin和end，它们标记了容器中元素的一个范围。这个范围被称为左闭合区间：[begin, end)</p>
-<p><strong>使用左闭合区间蕴含的编程假定</strong></p>
-<p>假定begin和end构成一个合法的迭代器范围，则：</p>
+<p><strong>刷新输出缓冲区</strong></p>
+<p>IO库还提供了两个操纵符用于刷新缓冲区：</p>
 <ul>
-<li><p>如果begin与end相等，则范围为空</p>
+<li><p>flush 刷新缓冲区，但不输出任何额外字符</p>
 </li>
-<li><p>如果begin与end不等，则范围至少包含一个元素，且begin指向该范围中的第一个元素</p>
-</li>
-<li><p>我们可以对begin递增若干次，使得begin == end</p>
+<li><p>ends 向缓冲区插入一个空字符，然后刷新缓冲区</p>
 </li>
 </ul>
-<h3 id="容器定义和初始化"><a href="#容器定义和初始化" class="headerlink" title="容器定义和初始化"></a>容器定义和初始化</h3><p>每个容器类型都定义了一个默认构造函数。除array之外，其他容器的默认构造函数都会创建一个指定类型的空容器，且都可以指定容器大小和元素初始值的参数。</p>
-<p>见表9.3，p299。</p>
-<p><strong>将一个容器初始化为另一个容器的拷贝</strong></p>
-<p>方法有两种：</p>
+<p><strong>unitbuf操纵符</strong></p>
+<p>如果想在每次输出操作后都刷新缓冲区，我们可以使用unitbuf操纵符。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cout</span> &lt;&lt; unitbuf;    <span class="comment">// 所有输出操作后都会立即刷新缓冲区</span></span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; nounitbuf;  <span class="comment">// 回到正常的缓冲方式</span></span><br></pre></td></tr></table></figure>
+<p>!!!warning<br>​    如果程序崩溃，输出缓冲区不会刷新</p>
+<h2 id="文件输入输出"><a href="#文件输入输出" class="headerlink" title="文件输入输出"></a>文件输入输出</h2><p>除了继承自iostream类型的行为之外，fstream中定义的类型还增加了一些新的成员来管理与流关联的文件。见p283。</p>
+<h3 id="使用文件流对象"><a href="#使用文件流对象" class="headerlink" title="使用文件流对象"></a>使用文件流对象</h3><p>当想要读写一个文件时，可以定义一个文件流对象，并将对象与文件关联起来。</p>
+<p>每个文件流类都定义了一个名为open的成员函数，它完成一些系统相关的操作，来定位给定的文件，并视情况打开为读或写模式。</p>
+<p>创建文件流对象时，如果提供了一个文件名，则open会被自动调用：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">ifstream <span class="title">in</span><span class="params">(file)</span></span>;    <span class="comment">// 构造一个ifstream并打开给定的文件</span></span><br><span class="line">ofstream out;         <span class="comment">// 输出文件流未关联到任何文件</span></span><br></pre></td></tr></table></figure>
+<p>!!!note<br>​    当一个fstream对象被销毁时，close会自动被调用。</p>
+<h3 id="文件模式"><a href="#文件模式" class="headerlink" title="文件模式"></a>文件模式</h3><p>每个流都有一个关联的文件模式，用来指出如何使用文件。见p286。</p>
+<p>每个文件流类型都定义了一个默认的文件模式，当未指定文件模式时，就使用此默认模式。</p>
 <ul>
-<li><p>直接拷贝整个容器，两个容器的类型和元素的类型都必须匹配。</p>
+<li><p>与ifstream关联的文件默认以in模式打开；</p>
 </li>
-<li><p>拷贝一个迭代器范围，容器类型不一定匹配，且元素类型只要能够转换即可。</p>
+<li><p>与ofstream关联的文件默认以out模式打开；</p>
+</li>
+<li><p>与fstream关联的文件默认以in和out模式打开。</p>
 </li>
 </ul>
-<h3 id="赋值和拷贝"><a href="#赋值和拷贝" class="headerlink" title="赋值和拷贝"></a>赋值和拷贝</h3><p>赋值运算符将其左边容器中的全部元素替换为右边容器中的元素的拷贝。具体见p302。</p>
-<p><strong>使用assign(仅顺序容器)</strong></p>
-<p>赋值运算要求两边容器类型和元素类型相同。顺序容器（除了array）还定义了一个名为assign的成员，允许从一个相容的序列中赋值。</p>
-<p><strong>使用swap</strong></p>
-<p>调用swap操作后，两个容器中的元素将会交换。</p>
-<p>除了array，交换两个容器的操作保证会很快，因为元素本身并未交换，swap只是交换了两个容器的内部数据结构。</p>
-<h3 id="容器大小操作"><a href="#容器大小操作" class="headerlink" title="容器大小操作"></a>容器大小操作</h3><p>每个容器都支持这些大小相关的操作：</p>
+<p><strong>以out模式打开文件会丢失已有数据</strong></p>
+<p>默认情况下，当我们打开一个ofstream时，文件的内容会被丢弃。</p>
+<p>阻止丢弃的方法是同时指定app模式：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">ofstream <span class="title">out</span><span class="params">(<span class="string">"file1"</span>)</span></span>;    <span class="comment">// 文件被截断</span></span><br><span class="line"><span class="function">ofstream <span class="title">app</span><span class="params">(<span class="string">"file2"</span>, ofstream::app)</span></span>;    <span class="comment">// 保留文件内容，写操作在文件末尾进行</span></span><br></pre></td></tr></table></figure>
+<h2 id="string流"><a href="#string流" class="headerlink" title="string流"></a>string流</h2><p>sstream头文件定义了三个类型来支持内存IO：</p>
 <ul>
-<li><p>成员函数size，返回容器中元素的数目，forward_list不支持；</p>
+<li><p>istringstream从string读取数据。</p>
 </li>
-<li><p>empty，当size为0时返回true，否则返回false；</p>
+<li><p>ostringstream向string写入数据。</p>
 </li>
-<li><p>max_size，返回一个大于或等于该容器所能容纳的最大元素数的值，这是一个很大的值。</p>
+<li><p>stringstream既可以从string读数据，也可以向string写数据。</p>
 </li>
 </ul>
-<h3 id="关系运算符"><a href="#关系运算符" class="headerlink" title="关系运算符"></a>关系运算符</h3><p>每个容器都支持相等运算符（==和!=），除了无序关联容器外的所有容器都支持关系运算符（&gt;, &gt;=, &lt;, &lt;=）。关系运算符左右两边的运算对象必须是相同类型的容器，且必须保存相同类型的元素。</p>
-<p>比较两个容器实际上是进行元素的逐对比较。</p>
-<p>!!!note<br>​    只有当元素类型定义了相应的比较运算符时，才可以使用关系运算符比较两个容器。</p>
-<h2 id="顺序容器操作"><a href="#顺序容器操作" class="headerlink" title="顺序容器操作"></a>顺序容器操作</h2><p>顺序容器和关联容器的不同之处在于两者组织元素的方式。这些不同之处直接关系到了元素如何存储、访问、添加及删除。</p>
-<h3 id="向顺序容器添加元素"><a href="#向顺序容器添加元素" class="headerlink" title="向顺序容器添加元素"></a>向顺序容器添加元素</h3><p>标准库容器提供了灵活的内存管理。在运行时可以动态添加或删除元素来改变容器大小。表9.5，p305。</p>
-<p>!!!warning<br>​    向一个deque、string或vector插入元素会使所有指向容器的迭代器、引用和指针失效。</p>
-<pre><code>将元素插入到deque、string或vector中的任何位置都是合法的。然而，这样做可能很耗时。
-</code></pre><p><strong>关键概念：容器元素是拷贝</strong></p>
-<p>当我们用一个对象来初始化容器时，或将一个对象插入到容器中时，实际上放入到容器中的是对象值的一个拷贝。</p>
-<h3 id="访问元素"><a href="#访问元素" class="headerlink" title="访问元素"></a>访问元素</h3><p>表9.6（p310）列出了我们可以用来在顺序容器中访问元素的操作。如果容器中没有元素，访问操作的结果是未定义的。</p>
-<p><strong>下标操作和安全的随机访问</strong></p>
-<p>提供快速随机访问的容器（string、vector、deque和array）也都提供下标运算符。保证下标合法是程序员的责任，编译器不检查越界错误。</p>
-<p>如果想确保下标是合法的，可以使用at成员函数。at成员函数类似下标运算符，如果下标越界，at会抛出一个out_of_range异常。</p>
-<h3 id="删除元素"><a href="#删除元素" class="headerlink" title="删除元素"></a>删除元素</h3><p>见表9.7，p311页。</p>
-<p>!!!warning<br>​    删除deque中除首尾之外的任何元素都会使所有迭代器、引用、指针失效。指向vector或string中删除点之后位置的迭代器、引用和指针都会失效。<br>​<br>    删除元素之前，程序员必须确保它们是存在的。</p>
-<h3 id="改变容器大小"><a href="#改变容器大小" class="headerlink" title="改变容器大小"></a>改变容器大小</h3><p>可以使用resize来增大或缩小容器。如果当前大小大于所要求的大小，容器后部的元素会被删除；如果当前大小小于新大小，会将新元素添加到容器后部。</p>
-<p>resize接受一个可选的元素指参数，用来初始化新添加的元素。如果未提供，新元素进行值初始化。</p>
-<h3 id="容器操作可能使迭代器失效"><a href="#容器操作可能使迭代器失效" class="headerlink" title="容器操作可能使迭代器失效"></a>容器操作可能使迭代器失效</h3><p>使用失效的迭代器、引用、或指针式一种严重的错误。</p>
-<p>向容器添加元素后：</p>
-<ul>
-<li><p>如果容器是vector或string，且存储空间被重新分配，那么所有的迭代器都会失效。如果空间未重新分配，指向插入位置之前的元素的迭代器仍有效，但之后的迭代器会失效。</p>
-</li>
-<li><p>对于list和forward_list，指向容器的迭代器仍有效。</p>
-</li>
-</ul>
-<p>当从容器中删除元素后：</p>
-<ul>
-<li><p>对于list和forward_list，指向容器其他位置的迭代器仍有效。</p>
-</li>
-<li><p>对于string和vector，被删除元素之前的元素的迭代器仍有效。</p>
-</li>
-</ul>
-<p>详细见书本p315。</p>
+<p>sstream增加了一些成员来管理与流相关联的string。见p287。</p>
+<h3 id="使用istringstream"><a href="#使用istringstream" class="headerlink" title="使用istringstream"></a>使用istringstream</h3><p>当我们的某些工作是对整行文本进行处理，而其他一些工作是处理行内的单个单词时，通常可以使用istringstream。</p>
+<h3 id="使用ostringstream"><a href="#使用ostringstream" class="headerlink" title="使用ostringstream"></a>使用ostringstream</h3><p>当我们逐步构造输出，希望最后一期打印时，ostringstream是很有用的。</p>
 
           
         
@@ -2098,7 +2082,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/05/ch08 IO库/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/05/ch09 顺序容器/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jinghua Ren">
@@ -2117,7 +2101,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/01/05/ch08 IO库/" itemprop="url">第八章 IO库</a></h1>
+                <a class="post-title-link" href="/2019/01/05/ch09 顺序容器/" itemprop="url">第九章 顺序容器</a></h1>
         
 
         <div class="post-meta">
@@ -2170,85 +2154,101 @@
         
           
             <hr>
-<h2 id="IO类"><a href="#IO类" class="headerlink" title="IO类"></a>IO类</h2><p>为了支持不同种类的IO处理操作，标准库定义了这几种类型：</p>
+<h2 id="顺序容器概览"><a href="#顺序容器概览" class="headerlink" title="顺序容器概览"></a>顺序容器概览</h2><p>顺序容器有：vector, deque, list, forward_list, array, string。见p292表9.1。</p>
+<p>所有顺序容器都提供了快速顺序访问元素的能力。但是，这些容器在以下方面都有不同的性能折中：</p>
 <ul>
-<li><p>iostream 定义了用于读写流的基本类型</p>
+<li><p>向容器添加或从元素中删除元素的代价</p>
 </li>
-<li><p>fstream 定义了读写命名文件的类型</p>
-</li>
-<li><p>sstream 定义了读写内存string对象的类型</p>
+<li><p>非顺序访问容器中元素的代价</p>
 </li>
 </ul>
-<p>它们分别定义在同名的头文件中。</p>
-<p><strong>IO类型间的关系</strong></p>
-<p>类型ifstream和istringstream都继承自istream。我们可以像使用istream对象一样来使用它们。对于ostream也是如此。</p>
-<h3 id="IO对象无拷贝或赋值"><a href="#IO对象无拷贝或赋值" class="headerlink" title="IO对象无拷贝或赋值"></a>IO对象无拷贝或赋值</h3><p>由于不能拷贝IO对象，因此也不能将形参或返回类型设置为流类型。进行IO操作的函数通常以引用方式传递或返回流。</p>
-<p>读写一个IO对象会改变其状态，因此传递和返回的引用不能是const的。</p>
-<h3 id="条件状态"><a href="#条件状态" class="headerlink" title="条件状态"></a>条件状态</h3><p>IO类定义了一些函数和标志，可以帮助我们访问和操纵流的条件状态。见p279。</p>
-<p>一个IO错误的例子：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> ival;</span><br><span class="line"><span class="built_in">cin</span> &gt;&gt; ival;</span><br></pre></td></tr></table></figure>
-<p>如果试图在标准输入上键入Boo，读操作就会失败，cin进入错误状态。</p>
-<p>如果输入一个文件结束符标识，cin也会进入错误状态。</p>
-<p>一个流一旦发生错误，其上后续的IO操作都会失败。确定一个流对象的状态的最简单的方法是将它当作一个条件来使用：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="built_in">cin</span> &gt;&gt; word)</span><br><span class="line">    <span class="comment">// ok</span></span><br></pre></td></tr></table></figure>
-<h3 id="管理输出缓冲"><a href="#管理输出缓冲" class="headerlink" title="管理输出缓冲"></a>管理输出缓冲</h3><p>每个输出流都管理一个缓冲区，用来保存程序读写的数据。如果执行下面的代码：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">os &lt;&lt; <span class="string">"please enter a value: "</span>;</span><br></pre></td></tr></table></figure>
-<p>文本串可能立即打印出来，但也有可能被操作系统保存在缓冲区中，随后再打印。这样可以带来很大的性能提升。</p>
-<p>导致缓冲区刷新的原因有：</p>
+<p>string和vector将元素保存在连续的内存空间中。由于元素是连续存储的，由元素的下标来计算其地址是非常快速的。但是，在其中间添加或删除元素就会非常耗时，因为这需要移动插入或删除位置之后的所有元素。而且，添加元素可能导致分配额外的存储空间，这种情况下，每个元素都会移动到新的存储空间中。</p>
+<p>list和forward_list两个容器添加和删除操作都很快速。作为代价，它们不支持元素的随机访问，为了访问一个元素，只能遍历整个容器。与vector、deque和array相比，这两个容器的额外内存开销也很大。</p>
+<p>deque支持快速随机访问，在deque的中间位置插入或删除元素的代价（可能）很高。但是，在deque的两端添加或删除元素都是很快的。</p>
+<p><strong>确定使用哪种容器</strong></p>
+<p>!!!tip<br>​    通常，使用vector是最好的选择，除非你有很好的理由选择其他容器。</p>
+<p>见书本p293的详细讨论。</p>
+<h2 id="容器库概览"><a href="#容器库概览" class="headerlink" title="容器库概览"></a>容器库概览</h2><p>容器类型上的操作形成了一种层次：</p>
 <ul>
-<li><p>程序正常结束</p>
+<li><p>某些操作是通用的，见表9.2，295页。</p>
 </li>
-<li><p>缓冲区满时</p>
+<li><p>某些操作仅针对顺序容器（表9.3，299页）、关联容器（表11.7，388页）或无序容器（表11.8，395页）。</p>
 </li>
-<li><p>使用操纵符，如endl，来显式刷新缓冲区</p>
-</li>
-<li><p>读cin或写cerr，都会导致cout的缓冲区被刷新</p>
+<li><p>还有一些操作只适用于一小部分容器。</p>
 </li>
 </ul>
-<p><strong>刷新输出缓冲区</strong></p>
-<p>IO库还提供了两个操纵符用于刷新缓冲区：</p>
+<h3 id="迭代器"><a href="#迭代器" class="headerlink" title="迭代器"></a>迭代器</h3><p>迭代器有着公共的接口：如果一个迭代器提供某个操作，那么所有提供相同操作的迭代器对这个操作的实现方式都是相同的。比如解引用操作。</p>
+<p>表3.6（96页）列出了容器迭代器支持的所有操作。表3.7（99页）列出了迭代器支持的算术运算，这些运算只能应用于string、vector、deque和array。</p>
+<p><strong>迭代器范围</strong></p>
+<p>迭代器范围由一对迭代器表示，通常被称为begin和end，它们标记了容器中元素的一个范围。这个范围被称为左闭合区间：[begin, end)</p>
+<p><strong>使用左闭合区间蕴含的编程假定</strong></p>
+<p>假定begin和end构成一个合法的迭代器范围，则：</p>
 <ul>
-<li><p>flush 刷新缓冲区，但不输出任何额外字符</p>
+<li><p>如果begin与end相等，则范围为空</p>
 </li>
-<li><p>ends 向缓冲区插入一个空字符，然后刷新缓冲区</p>
+<li><p>如果begin与end不等，则范围至少包含一个元素，且begin指向该范围中的第一个元素</p>
+</li>
+<li><p>我们可以对begin递增若干次，使得begin == end</p>
 </li>
 </ul>
-<p><strong>unitbuf操纵符</strong></p>
-<p>如果想在每次输出操作后都刷新缓冲区，我们可以使用unitbuf操纵符。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cout</span> &lt;&lt; unitbuf;    <span class="comment">// 所有输出操作后都会立即刷新缓冲区</span></span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; nounitbuf;  <span class="comment">// 回到正常的缓冲方式</span></span><br></pre></td></tr></table></figure>
-<p>!!!warning<br>​    如果程序崩溃，输出缓冲区不会刷新</p>
-<h2 id="文件输入输出"><a href="#文件输入输出" class="headerlink" title="文件输入输出"></a>文件输入输出</h2><p>除了继承自iostream类型的行为之外，fstream中定义的类型还增加了一些新的成员来管理与流关联的文件。见p283。</p>
-<h3 id="使用文件流对象"><a href="#使用文件流对象" class="headerlink" title="使用文件流对象"></a>使用文件流对象</h3><p>当想要读写一个文件时，可以定义一个文件流对象，并将对象与文件关联起来。</p>
-<p>每个文件流类都定义了一个名为open的成员函数，它完成一些系统相关的操作，来定位给定的文件，并视情况打开为读或写模式。</p>
-<p>创建文件流对象时，如果提供了一个文件名，则open会被自动调用：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">ifstream <span class="title">in</span><span class="params">(file)</span></span>;    <span class="comment">// 构造一个ifstream并打开给定的文件</span></span><br><span class="line">ofstream out;         <span class="comment">// 输出文件流未关联到任何文件</span></span><br></pre></td></tr></table></figure>
-<p>!!!note<br>​    当一个fstream对象被销毁时，close会自动被调用。</p>
-<h3 id="文件模式"><a href="#文件模式" class="headerlink" title="文件模式"></a>文件模式</h3><p>每个流都有一个关联的文件模式，用来指出如何使用文件。见p286。</p>
-<p>每个文件流类型都定义了一个默认的文件模式，当未指定文件模式时，就使用此默认模式。</p>
+<h3 id="容器定义和初始化"><a href="#容器定义和初始化" class="headerlink" title="容器定义和初始化"></a>容器定义和初始化</h3><p>每个容器类型都定义了一个默认构造函数。除array之外，其他容器的默认构造函数都会创建一个指定类型的空容器，且都可以指定容器大小和元素初始值的参数。</p>
+<p>见表9.3，p299。</p>
+<p><strong>将一个容器初始化为另一个容器的拷贝</strong></p>
+<p>方法有两种：</p>
 <ul>
-<li><p>与ifstream关联的文件默认以in模式打开；</p>
+<li><p>直接拷贝整个容器，两个容器的类型和元素的类型都必须匹配。</p>
 </li>
-<li><p>与ofstream关联的文件默认以out模式打开；</p>
-</li>
-<li><p>与fstream关联的文件默认以in和out模式打开。</p>
+<li><p>拷贝一个迭代器范围，容器类型不一定匹配，且元素类型只要能够转换即可。</p>
 </li>
 </ul>
-<p><strong>以out模式打开文件会丢失已有数据</strong></p>
-<p>默认情况下，当我们打开一个ofstream时，文件的内容会被丢弃。</p>
-<p>阻止丢弃的方法是同时指定app模式：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">ofstream <span class="title">out</span><span class="params">(<span class="string">"file1"</span>)</span></span>;    <span class="comment">// 文件被截断</span></span><br><span class="line"><span class="function">ofstream <span class="title">app</span><span class="params">(<span class="string">"file2"</span>, ofstream::app)</span></span>;    <span class="comment">// 保留文件内容，写操作在文件末尾进行</span></span><br></pre></td></tr></table></figure>
-<h2 id="string流"><a href="#string流" class="headerlink" title="string流"></a>string流</h2><p>sstream头文件定义了三个类型来支持内存IO：</p>
+<h3 id="赋值和拷贝"><a href="#赋值和拷贝" class="headerlink" title="赋值和拷贝"></a>赋值和拷贝</h3><p>赋值运算符将其左边容器中的全部元素替换为右边容器中的元素的拷贝。具体见p302。</p>
+<p><strong>使用assign(仅顺序容器)</strong></p>
+<p>赋值运算要求两边容器类型和元素类型相同。顺序容器（除了array）还定义了一个名为assign的成员，允许从一个相容的序列中赋值。</p>
+<p><strong>使用swap</strong></p>
+<p>调用swap操作后，两个容器中的元素将会交换。</p>
+<p>除了array，交换两个容器的操作保证会很快，因为元素本身并未交换，swap只是交换了两个容器的内部数据结构。</p>
+<h3 id="容器大小操作"><a href="#容器大小操作" class="headerlink" title="容器大小操作"></a>容器大小操作</h3><p>每个容器都支持这些大小相关的操作：</p>
 <ul>
-<li><p>istringstream从string读取数据。</p>
+<li><p>成员函数size，返回容器中元素的数目，forward_list不支持；</p>
 </li>
-<li><p>ostringstream向string写入数据。</p>
+<li><p>empty，当size为0时返回true，否则返回false；</p>
 </li>
-<li><p>stringstream既可以从string读数据，也可以向string写数据。</p>
+<li><p>max_size，返回一个大于或等于该容器所能容纳的最大元素数的值，这是一个很大的值。</p>
 </li>
 </ul>
-<p>sstream增加了一些成员来管理与流相关联的string。见p287。</p>
-<h3 id="使用istringstream"><a href="#使用istringstream" class="headerlink" title="使用istringstream"></a>使用istringstream</h3><p>当我们的某些工作是对整行文本进行处理，而其他一些工作是处理行内的单个单词时，通常可以使用istringstream。</p>
-<h3 id="使用ostringstream"><a href="#使用ostringstream" class="headerlink" title="使用ostringstream"></a>使用ostringstream</h3><p>当我们逐步构造输出，希望最后一期打印时，ostringstream是很有用的。</p>
+<h3 id="关系运算符"><a href="#关系运算符" class="headerlink" title="关系运算符"></a>关系运算符</h3><p>每个容器都支持相等运算符（==和!=），除了无序关联容器外的所有容器都支持关系运算符（&gt;, &gt;=, &lt;, &lt;=）。关系运算符左右两边的运算对象必须是相同类型的容器，且必须保存相同类型的元素。</p>
+<p>比较两个容器实际上是进行元素的逐对比较。</p>
+<p>!!!note<br>​    只有当元素类型定义了相应的比较运算符时，才可以使用关系运算符比较两个容器。</p>
+<h2 id="顺序容器操作"><a href="#顺序容器操作" class="headerlink" title="顺序容器操作"></a>顺序容器操作</h2><p>顺序容器和关联容器的不同之处在于两者组织元素的方式。这些不同之处直接关系到了元素如何存储、访问、添加及删除。</p>
+<h3 id="向顺序容器添加元素"><a href="#向顺序容器添加元素" class="headerlink" title="向顺序容器添加元素"></a>向顺序容器添加元素</h3><p>标准库容器提供了灵活的内存管理。在运行时可以动态添加或删除元素来改变容器大小。表9.5，p305。</p>
+<p>!!!warning<br>​    向一个deque、string或vector插入元素会使所有指向容器的迭代器、引用和指针失效。</p>
+<pre><code>将元素插入到deque、string或vector中的任何位置都是合法的。然而，这样做可能很耗时。
+</code></pre><p><strong>关键概念：容器元素是拷贝</strong></p>
+<p>当我们用一个对象来初始化容器时，或将一个对象插入到容器中时，实际上放入到容器中的是对象值的一个拷贝。</p>
+<h3 id="访问元素"><a href="#访问元素" class="headerlink" title="访问元素"></a>访问元素</h3><p>表9.6（p310）列出了我们可以用来在顺序容器中访问元素的操作。如果容器中没有元素，访问操作的结果是未定义的。</p>
+<p><strong>下标操作和安全的随机访问</strong></p>
+<p>提供快速随机访问的容器（string、vector、deque和array）也都提供下标运算符。保证下标合法是程序员的责任，编译器不检查越界错误。</p>
+<p>如果想确保下标是合法的，可以使用at成员函数。at成员函数类似下标运算符，如果下标越界，at会抛出一个out_of_range异常。</p>
+<h3 id="删除元素"><a href="#删除元素" class="headerlink" title="删除元素"></a>删除元素</h3><p>见表9.7，p311页。</p>
+<p>!!!warning<br>​    删除deque中除首尾之外的任何元素都会使所有迭代器、引用、指针失效。指向vector或string中删除点之后位置的迭代器、引用和指针都会失效。<br>​<br>    删除元素之前，程序员必须确保它们是存在的。</p>
+<h3 id="改变容器大小"><a href="#改变容器大小" class="headerlink" title="改变容器大小"></a>改变容器大小</h3><p>可以使用resize来增大或缩小容器。如果当前大小大于所要求的大小，容器后部的元素会被删除；如果当前大小小于新大小，会将新元素添加到容器后部。</p>
+<p>resize接受一个可选的元素指参数，用来初始化新添加的元素。如果未提供，新元素进行值初始化。</p>
+<h3 id="容器操作可能使迭代器失效"><a href="#容器操作可能使迭代器失效" class="headerlink" title="容器操作可能使迭代器失效"></a>容器操作可能使迭代器失效</h3><p>使用失效的迭代器、引用、或指针式一种严重的错误。</p>
+<p>向容器添加元素后：</p>
+<ul>
+<li><p>如果容器是vector或string，且存储空间被重新分配，那么所有的迭代器都会失效。如果空间未重新分配，指向插入位置之前的元素的迭代器仍有效，但之后的迭代器会失效。</p>
+</li>
+<li><p>对于list和forward_list，指向容器的迭代器仍有效。</p>
+</li>
+</ul>
+<p>当从容器中删除元素后：</p>
+<ul>
+<li><p>对于list和forward_list，指向容器其他位置的迭代器仍有效。</p>
+</li>
+<li><p>对于string和vector，被删除元素之前的元素的迭代器仍有效。</p>
+</li>
+</ul>
+<p>详细见书本p315。</p>
 
           
         
@@ -2582,7 +2582,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/05/ch18 用于大型程序的工具/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/05/ch15 面向对象程序设计/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jinghua Ren">
@@ -2601,7 +2601,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/01/05/ch18 用于大型程序的工具/" itemprop="url">第18章 用于大型程序的工具</a></h1>
+                <a class="post-title-link" href="/2019/01/05/ch15 面向对象程序设计/" itemprop="url">第十五章 面向对象程序设计</a></h1>
         
 
         <div class="post-meta">
@@ -2653,169 +2653,177 @@
       
         
           
-            <p>与仅需几个程序员就能开发完成的系统相比，大规模编程对程序设计语言的要求更高。大规模应用程序的特殊要求包括：</p>
+            <hr>
+<h2 id="OOP概述"><a href="#OOP概述" class="headerlink" title="OOP概述"></a>OOP概述</h2><p><strong>面向对象程序设计（object-oriented  programming）</strong>的核心思想是数据抽象、继承和动态绑定。</p>
+<p>通过数据抽象，我们可以将类的接口与实现分离。</p>
+<p>使用继承，可以定义相似的类型并对其相似关系建模。</p>
+<p>使用动态绑定，可以在一定程度上忽略相似类型的区别，而以统一的方式使用它们的对象。</p>
+<p><strong>继承</strong></p>
+<p>通过继承（inheritance）联系在一起的类构成一种层次关系。层次关系的根部有一个基类（base class），其他类直接或间接地从基类继承而来，这些继承得到的类称为派生类（derived class）。</p>
+<p>基类负责定义在层次关系中所有类共同拥有的成员，而每个派生类定义各自特有的成员。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 基类的部分定义</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Quote</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">isbn</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="keyword">double</span> <span class="title">net_price</span><span class="params">(<span class="built_in">std</span>::<span class="keyword">size_t</span> n)</span> <span class="keyword">const</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bulk_quote</span> :</span> <span class="keyword">public</span> Quote &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">double</span> <span class="title">net_price</span><span class="params">(<span class="built_in">std</span>::<span class="keyword">size_t</span>)</span> <span class="keyword">const</span> override</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>对于某些函数，基类希望它的派生类各自定义适合自身的版本，此时基类就将这些函数声明成<strong>虚函数(virtual function)</strong>。</p>
+<p>派生类必须通过使用<strong>类派生列表（class deriveation list）</strong>明确指出它是从哪个基类继承而来的，其形式是：首先一个冒号，后面紧跟以逗号分隔的基类列表，其中每个基类前面可以有访问说明符。</p>
+<p>派生类必须在其内部对所有重新定义的虚函数进行声明，最好在后面加上override关键字，以确保编译器为我们做语法检查。</p>
+<h3 id="定义基类"><a href="#定义基类" class="headerlink" title="定义基类"></a>定义基类</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Quote</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	Quote() = <span class="keyword">default</span>;</span><br><span class="line">	Quote(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;book, <span class="keyword">double</span> sales_price) : bookNo(book), price(sales_price) &#123;&#125;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">isbn</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> bookNo; &#125;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">virtual</span> ~Quote() = <span class="keyword">default</span>;	<span class="comment">// 对析构函数进行动态绑定</span></span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="keyword">double</span> <span class="title">net_price</span><span class="params">(<span class="built_in">std</span>::<span class="keyword">size_t</span> n)</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> n * price; &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="built_in">std</span>::<span class="built_in">string</span> bookNo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">	<span class="keyword">double</span> price = <span class="number">0.0</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>!!!note<br>​    基类通常都应该定义一个虚析构函数，即使该函数不执行任何实际操作也是如此。</p>
+<p><strong>成员函数与继承</strong></p>
+<p>派生类可以继承其基类的成员，但遇到像net_price这样的与类型相关的操作时，派生类必须对其重新定义。即，派生类需要对这些操作提供自己的新定义以覆盖（override）从基类继承而来的旧定义。</p>
+<p>在C++语言中，基类必须将它的两种成员函数区分开来：</p>
 <ul>
-<li><p>在独立开发的子系统之间协同处理错误的能力。</p>
+<li><p>一种是基类希望其派生类进行覆盖的函数，则将其定义为虚函数。</p>
 </li>
-<li><p>使用各种库（可能包含独立开发的库）进行协同开发的能力。</p>
-</li>
-<li><p>对比较复杂的应用概念建模的能力。</p>
+<li><p>另一种是基类希望派生类直接继承而不要改变的函数。</p>
 </li>
 </ul>
-<p>这三种C++语言特性正好能满足上述要求：异常处理、命名空间和多重继承。</p>
-<hr>
-<h2 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h2><p>异常处理（exception handling）机制允许程序中独立开发的部分能够在运行时就出现的问题进行通信并做出相应的处理。异常使得我们能够将问题的检测与解决过程分离开来。程序的一部分负责检测问题的出现，然后解决该问题的任务传递给程序的另一部分。检测环节无须知道问题处理模块的所有细节，反之亦然。</p>
-<h3 id="抛出异常"><a href="#抛出异常" class="headerlink" title="抛出异常"></a>抛出异常</h3><p>在C++语言中，我们通过抛出（throwing）一条表达式来引发（raised）一个异常。被选中的处理代码是在调用链中与抛出对象类型匹配的最近的处理代码。</p>
-<p>当执行一个throw时，后面的语句将不再被执行。程序的控制权从throw转移到与之匹配的catch模块。该catch可能是同一个函数中的局部catch，也可能位于直接或间接调用了发生异常的函数的另一个函数中。控制权的转移有两个重要的含义：</p>
-<ol>
-<li><p>沿着调用链的函数可能会提早退出。</p>
-</li>
-<li><p>一旦程序开始执行异常处理代码，则沿着调用链创建的对象将被销毁。</p>
-</li>
-</ol>
-<p>!!!note<br>​    1. 一个异常如果没有被捕获，则它将终止当前的程序。<br>​    2. 析构函数不应该抛出异常。</p>
-<p><strong>异常对象</strong></p>
-<p>异常对象（exception object）是一种特殊的对象，编译器使用异常抛出表达式来对异常对象进行拷贝初始化。如果表达式是类类型，则它必须含有一个可访问的析构函数和一个可访问的拷贝或移动构造函数。如果该表达式是数组类型或函数类型，则表达式将被转换成与之对应的指针类型。</p>
-<p>当我们抛出一条表达式时，该表达式的静态编译时类型决定了异常对象的类型。如果一条throw表达式解引用一个基类指针，而该指针实际指向的是派生类对象，则抛出的对象将被切掉一部分，只有基类部分被抛出。</p>
-<h3 id="捕获异常"><a href="#捕获异常" class="headerlink" title="捕获异常"></a>捕获异常</h3><p>catch子句（catch clause）中的异常声明（exception declaration）看起来像是只包含一个形参的函数形参列表。</p>
-<p>声明的类型决定了处理代码所能捕获的异常类型。这个类型必须是完全类型，它可以是左值引用，但不能是右值引用。</p>
-<p>当进入一个catch语句后，通过异常对象初始化异常声明中的参数。如果catch的参数类型是非引用类型，则该参数是异常对象的一个副本；如果是引用类型，则他是异常对象的一个别名。</p>
-<p>要注意的一点是：异常声明的静态类型将决定catch语句所能执行的操作。如果catch的参数是基类类型，则catch无法使用派生类特有的任何成员。</p>
-<p><strong>查找匹配的处理代码</strong></p>
-<p>在搜寻catch语句的过程中，我们最终找到的catch未必是异常的最佳匹配。相反，挑选出来的应该是第一个与异常匹配的catch语句。</p>
-<p>!!!note<br>​    如果在多个catch语句的类型之间存在着继承关系，则我们应该把继承链最底端的类（most derived type）放在前面，而将继承链最顶端的类（least derived type）放在后面。</p>
-<p><strong>重新抛出</strong></p>
-<p>有时，一个单独的catch语句不能完整地处理某个异常。在执行了某些校正操作之后，当前的catch可能会决定由调用链更上一层的函数接着处理异常。一条catch语句通过重新抛出（rethrowing）的操作将异常传递给另外一个catch语句：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">throw;</span><br></pre></td></tr></table></figure>
-<p>空的throw语句只能出现在catch语句或catch语句直接或间接调用的函数之内。如果在处理代码之外的区域遇到了空throw语句，编译器将调用terminate。</p>
-<p>一个重新抛出语句并不指定新的表达式，而是将当前的异常对象沿着调用链向上传递。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">catch</span> (my_error &amp;eObj) &#123;</span><br><span class="line">	eObj.status = errCodes::serverErr;	<span class="comment">// 修改了异常对象</span></span><br><span class="line">	<span class="keyword">throw</span>;								<span class="comment">// 异常对象的status成员是severErr</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (other_error eObj) &#123;</span><br><span class="line">	eObj.status = errCodes::badErr;		<span class="comment">// 只修改了异常对象的局部副本</span></span><br><span class="line">	<span class="keyword">throw</span>;								<span class="comment">// 异常对象的status成员没有改变</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>捕获所有异常的处理代码</strong></p>
-<p>为了一次性捕获所有异常，我们使用省略号作为异常声明，这样的处理代码称为捕获所有异常（catch-all）的处理代码，形如catch(…)。它可以与任意类型的异常匹配。</p>
-<p>catch(…)通常与重新抛出语句一起使用，其中catch执行当前局部能完成的工作，随后重新抛出异常：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">manip</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="comment">// 这里的操作将引发并抛出一个异常</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">catch</span> (...) &#123;</span><br><span class="line">		<span class="comment">// 处理异常的某些特殊操作</span></span><br><span class="line">		<span class="keyword">throw</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>!!!note<br>​    如果catch(…)与其他几个catch语句一起出现，则catch(…)必须在最后的位置。出现在捕获所有异常语句后面的catch语句将永远不会被匹配。</p>
-<h3 id="noexception异常说明"><a href="#noexception异常说明" class="headerlink" title="noexception异常说明"></a>noexception异常说明</h3><p>对于用户及编译器来说，预先知道某个函数不会抛出异常大有裨益。编译器确认函数不会抛出异常，它就能执行某些特殊的优化操作。</p>
-<p>在C++11新标准中，我们可以通过提供noexcept说明（noexcept specification）指定某个函数不会抛出异常，其形式是关键字noexcept紧跟在函数的参数列表后面：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">recoup</span><span class="params">(<span class="keyword">int</span>)</span> <span class="keyword">noexcept</span></span>;				<span class="comment">// 不会抛出异常</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">alloc</span><span class="params">(<span class="keyword">int</span>)</span></span>;						<span class="comment">// 可能抛出异常</span></span><br></pre></td></tr></table></figure>
-<p>对于一个函数来说，noexcept说明要么出现在该函数的所有声明语句和定义语句中，要么一次也不出现。</p>
-<p><strong>违反异常说明</strong></p>
-<p>编译器并不会在编译时检查noexcept说明。如果noexcept函数抛出了异常，程序就会调用terminate以确保遵守不在运行时抛出异常的承诺。</p>
-<p>更多关于noexcept的讨论见p691。</p>
-<h2 id="命名空间"><a href="#命名空间" class="headerlink" title="命名空间"></a>命名空间</h2><p>多个库将名字放置在全局命名空间中将引发命名空间污染（namespace pollution）。</p>
-<p>命名空间（namespace）为防止名字冲突提供了更加可控的机制。命名空间分割了全局命名空间，其中每个命名空间是一个作用域。</p>
-<h3 id="命名空间的定义"><a href="#命名空间的定义" class="headerlink" title="命名空间的定义"></a>命名空间的定义</h3><p>一个命名空间的定义包含两部分：首先是关键字namespace，随后是命名空间的名字。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> cplusplus_primer &#123;</span><br><span class="line">	<span class="class"><span class="keyword">class</span> <span class="title">Sales_data</span> &#123;</span>&#125;;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">Foo</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>命名空间既可以定义在全局作用域内，也可以定义在其他命名空间中，但是不能定义在函数或类的内部。</p>
-<p>全局作用域是隐式的，所以它没有名字。这样的形式<code>::member_name</code>表示全局命名空间中的一个成员。</p>
-<p><strong>命名空间可以是不连续的</strong></p>
-<p>编写如下命名空间定义：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> nsp &#123;</span><br><span class="line">	<span class="comment">// 相关声明</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>可能是定义了一个名为nsp的新命名空间，也可能是为已经存在的命名空间添加一些新成员。</p>
-<p>命名空间的组织方式类似于我们管理自定义类及函数的方式：</p>
+<p>当我们使用指针或引用调用虚函数时，该调用将被动态绑定。根据引用或指针所绑定的对象类型不同，该调用可能执行基类的版本，也可能执行某个派生类的版本。</p>
+<p><strong>访问控制与继承</strong></p>
+<p>派生类可以继承定义在基类中的成员，但派生类的成员函数不一定有权访问从基类继承而来的成员。</p>
+<p>派生类能访问公有成员、受保护的成员，不能访问私有成员。</p>
+<h3 id="定义派生类"><a href="#定义派生类" class="headerlink" title="定义派生类"></a>定义派生类</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bulk_quote</span> :</span> <span class="keyword">public</span> Quote &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	Bulk_quote() = <span class="keyword">default</span>;</span><br><span class="line">	Bulk_quote(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;book, <span class="keyword">double</span> p, <span class="built_in">std</span>::<span class="keyword">size_t</span> qty, <span class="keyword">double</span> disc) : </span><br><span class="line">		Quote(book, p), min_qty(qty), discount(disc) &#123;&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 覆盖基类的函数版本以实现基于大量购买的折扣政策</span></span><br><span class="line">	<span class="function"><span class="keyword">double</span> <span class="title">net_price</span><span class="params">(<span class="built_in">std</span>::<span class="keyword">size_t</span>)</span> <span class="keyword">const</span> override</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="built_in">std</span>::<span class="keyword">size_t</span> min_qty = <span class="number">0</span>;	<span class="comment">// 适用折扣最低购买量</span></span><br><span class="line">	<span class="keyword">double</span> discount = <span class="number">0.0</span>;		<span class="comment">// 折扣</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><strong>派生类中的虚函数</strong></p>
+<p>派生类经常覆盖它继承的虚函数。如果派生类没有覆盖其基类中的某个虚函数，则该虚函数的行为类似于其他的普通成员，派生类会直接继承其在基类中的版本。</p>
+<p>派生类可以在它覆盖的函数前使用virtual关键字，但不是必须的。C++11新标准允许派生类显式地注明它使用某个成员函数覆盖了它继承的虚函数，办法函数后面加一个关键字override。</p>
+<p><strong>派生类对象及派生类向基类的类型转换</strong></p>
+<p>一个派生类对象包含多个组成部分：</p>
 <ul>
-<li><p>命名空间的一部分成员的作用是定义类，以及声明作为类接口的函数及对象，则这些成员应该置于头文件中。</p>
+<li><p>一个包含派生类自己定义的（非静态）成员的子对象。</p>
 </li>
-<li><p>命名空间成员的定义部分则置于另外的源文件中。</p>
+<li><p>一个与派生类继承的基类对应的子对象，如果有多个基类，那么这样的子对象也有多个。</p>
 </li>
 </ul>
-<p>在程序中某些实体只能定义一次：如非内联函数、静态数据成员、变量等，命名空间中定义的名字也需要满足这一要求，我们可以通过上面的方式组织命名空间并达到目的。</p>
-<p>更多命名空间的定义方式见p698。</p>
-<h3 id="使用命名空间的成员"><a href="#使用命名空间的成员" class="headerlink" title="使用命名空间的成员"></a>使用命名空间的成员</h3><p>像namespace_name::member_name这样使用命名空间的成员显然非常烦琐，如果命名空间名字很长时尤其如此。</p>
-<p><strong>命名空间别名</strong></p>
-<p>命名空间别名（namespace alias）使得我们可以为命名空间的名字设定一个短得多的同义词。例如：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> cplusplus_primer &#123;&#125;;</span><br></pre></td></tr></table></figure>
-<p>我们可以为其设定一个短得多的同义词：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> primer = cplusplus_primer;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> Qlib = cplusplus_primer::QueryLib;</span><br></pre></td></tr></table></figure>
-<p>!!!note<br>​    一个命名空间可以有好几个同义词或别名，所有别名都与命名空间原来的名字等价。</p>
-<p><strong>using声明：扼要概述</strong></p>
-<p>一条using声明（using declaration）语句一次只引入命名空间的一个成员。它使得我们可以清楚地知道程序中所用的到底是哪个名字。它的有效范围从using声明的地方开始，一直到using声明所在的作用域结束为止。在此过程中，外层作用域的同名实体将被隐藏。</p>
-<p><strong>using指示</strong></p>
-<p>using指示（using directive）和using声明类似的地方是，我们可以使用命名空间名字的简写形式；和using声明不同的是，我们无法控制哪些名字是可见的，因为所有名字都是可见的。</p>
-<p>using指示以关键字using开始，后面是关键字namespace以及命名空间的名字。它使得某个命名空间中所有的名字都可见，简写的名字从using指示开始，一直到using指示所在的作用域结束都能使用。</p>
-<p>更多关于using指示的讨论见p703。</p>
-<h3 id="类、命名空间与作用域"><a href="#类、命名空间与作用域" class="headerlink" title="类、命名空间与作用域"></a>类、命名空间与作用域</h3><p>对命名空间内部名字的查找遵循常规的查找规则：即由内向外依次查找每个外层作用域。外层作用域也可能是一个或多个嵌套的命名空间，直到最外层的全局命名空间查找过程终止。</p>
-<p><strong>实参相关的查找与类类型形参</strong></p>
-<p>当我们给函数传递一个类类型的对象时，除了在常规的作用域查找外还会查找实参类所属的命名空间。这一例外对于传递类的引用或指针的调用同样有效。</p>
-<p>还有更多的讨论见书本。</p>
-<h3 id="重载与命名空间"><a href="#重载与命名空间" class="headerlink" title="重载与命名空间"></a>重载与命名空间</h3><p>using声明或using指示能将某些函数添加到候选函数集。</p>
-<p><strong>与实参相关的查找与重载</strong></p>
-<p>对于接受类类型实参的函数来说，其名字查找将在实参类所属的命名空间中进行。这条规则对于如何确定候选函数集也有影响。我们将在每个实参类（以及实参类的基类）所属的命名空间中搜寻候选函数。在这些命名空间中所有与被调用函数同名的函数都将被添加到候选集当中。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> NS &#123;</span><br><span class="line">	<span class="class"><span class="keyword">class</span> <span class="title">Quote</span> &#123;</span>&#125;;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">display</span><span class="params">(<span class="keyword">const</span> Quote&amp;)</span> </span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bulk_item</span> :</span> <span class="keyword">public</span> NS::Quote &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Bulk_item book1;</span><br><span class="line">	display(book1);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们传递给display的实参属于类类型Bulk_item，因此该调用语句的候选函数不仅应该在调用语句所在的作用域中查找，而且也应该在Bulk_item及其基类Quote所属的命名空间中查找。命名空间NS中声明的函数display(const Quote&amp;)也将被添加到候选函数集当中。</p>
-<p>using声明与using指示都会把命名空间的函数注入当前的作用域，并在调用时加入到候选函数中。这有可能造成二义性调用等重载问题，具体见书本上的讨论。</p>
-<h2 id="多重继承与虚继承"><a href="#多重继承与虚继承" class="headerlink" title="多重继承与虚继承"></a>多重继承与虚继承</h2><p>多重继承是指从多个直接基类中产生派生类的能力。多重继承的派生类继承了所以父类的属性。书本以动物体系为例进行讲解。</p>
-<h3 id="多重继承"><a href="#多重继承" class="headerlink" title="多重继承"></a>多重继承</h3><p>在派生类的派生列表中可以包含多个基类：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bear</span> :</span> <span class="keyword">public</span> ZooAnimal &#123;&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Panda</span> :</span> <span class="keyword">public</span> Bear, <span class="keyword">public</span> Endangered &#123;&#125;;</span><br></pre></td></tr></table></figure>
-<p>每个基类包含一个可选的访问说明符。对于派生类能够继承的基类个数，C++没有进行特殊规定；但是在某个给定的派生列表中，同一个基类只能出现一次。</p>
-<p>在多重继承关系中，派生类的对象包含有每个基类的子对象。在Panda对象中含有一个Bear部分（其中又含有一个ZooAnimal部分）、一个Endangered部分以及在Panda中声明的非静态数据成员。</p>
-<p><strong>派生类构造函数初始化所有基类</strong></p>
-<p>构造一个派生类对象将同时构造并初始化它的所有基类子对象。与从一个基类进行的派生一样，多重继承的派生类的构造函数初始值也只能初始化它的直接基类：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 显式地初始化所有基类</span></span><br><span class="line">Panda::Panda(<span class="built_in">std</span>::<span class="built_in">string</span> name, <span class="keyword">bool</span> onExhibit) : </span><br><span class="line">	Bear(name, onExhibit, <span class="string">"Panda"</span>),</span><br><span class="line">	Endangered(Endangered::critical) &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 隐式地使用Bear的默认构造函数初始化Bear子对象</span></span><br><span class="line">Panda::Panda() :</span><br><span class="line">	Endangered(Endangered::critical) &#123;&#125;</span><br></pre></td></tr></table></figure>
-<p>基类的构造顺序与派生列表中基类的出现顺序保持一致，而与派生类构造函数初始值列表中基类的顺序无关。一个Panda对象的初始化顺序如下：</p>
+<p>C++标准并没有明确规定派生类的对象在内存中如何分布。</p>
+<p>我们能把派生类的对象当成基类对象来使用，而且也能将基类的指针或引用绑定到派生类对象的基类部分上。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Quote item;				<span class="comment">// 基类对象</span></span><br><span class="line">Bulk_quote bulk;		<span class="comment">// 派生类对象</span></span><br><span class="line">Quote *p = &amp;item;		<span class="comment">// p指向Quote对象</span></span><br><span class="line">p = &amp;bulk;				<span class="comment">// p指向bulk的Quote部分</span></span><br></pre></td></tr></table></figure>
+<p>这种转换称为<strong>派生类到基类的转换(derived-to-base)</strong>，这是一种隐式转换。</p>
+<p><strong>派生类的构造函数</strong></p>
+<p>尽管派生类对象中含有从基类继承而来的成员，但派生类并不能直接初始化这些成员。派生类必须使用基类的构造函数来初始化它的基类部分。</p>
+<p>!!!note<br>​    每个类控制它自己的成员初始化过程。</p>
+<pre><code>首先初始化基类的部分，然后按照声明的顺序依次初始化派生类的成员。
+</code></pre><p><strong>继承与静态成员</strong></p>
+<p>如果基类定义了一个静态成员，则在整个继承体系中只存在该成员的唯一实例。</p>
+<p>静态成员遵循通用的访问控制规则，如果基类中的成员是private的，则派生类无权访问它。如果某静态成员是可访问的，则我们既能通过基类使用它也能通过派生类使用它。</p>
+<p><strong>防止继承的发生</strong></p>
+<p>有时候我们会定义这样一种类，我们不希望其他类继承它，或者不想考虑它是否适合作为一个基类。为了实现这一目的，C++11新标准提供了一种防止继承发生的方法，即在类名后跟一个关键字final：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NoDerived</span> <span class="title">final</span> &#123;</span> <span class="comment">/**/</span> &#125;;			<span class="comment">// NoDerived不能作为基类</span></span><br></pre></td></tr></table></figure>
+<h3 id="类型转换与继承"><a href="#类型转换与继承" class="headerlink" title="类型转换与继承"></a>类型转换与继承</h3><p>可以将基类的指针或引用绑定到派生类对象上有一层极为重要的含义：当使用基类的引用（或指针）时，实际上我们并不清除该引用（或指针）所绑定对象的真实类型。该对象可能是基类的对象，也可能是派生类的对象。</p>
+<p>!!!note<br>​    和内置指针一样，智能指针类也支持派生类向基类的类型转换，这意味着我们可以将一个派生类对象的指针存储在一个基类的智能指针内。</p>
+<p><strong>静态类型与动态类型</strong></p>
+<p>表达式的静态类型在编译时总是已知的，它是变量声明时的类型或表达式生成的类型。</p>
+<p>动态类型则是变量或表达式表示的内存中的对象的类型。动态类型直到运行时才可知。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">double</span> ret = item.net_price(n);</span><br></pre></td></tr></table></figure>
+<p>item的静态类型是Quote&amp;，它的动态类型则依赖于item绑定的实参。</p>
+<p>如果表达式既不是引用也不是指针，则它的动态类型永远与静态类型一致。</p>
+<p>当我们用一个派生类对象为一个基类对象初始化或赋值时，只有该派生类对象中的基类部分会被拷贝、移动或赋值，它的派生类部分将被忽略掉。</p>
+<p>更多关于基类和派生类之间类型转换的讨论见p534。</p>
+<h2 id="虚函数"><a href="#虚函数" class="headerlink" title="虚函数"></a>虚函数</h2><p><strong>对虚函数的调用可能在运行时才被解析</strong></p>
+<p>当某个虚函数通过指针或引用调用时，编译器产生的代码直到运行时才能确定应该调用哪个版本的函数。被调用的函数是与绑定到指针或引用上的对象的动态类型相匹配的那一个。</p>
+<p><strong>派生类中的虚函数</strong></p>
+<p>当我们在派生类中覆盖了某个虚函数时，可以再一次使用virtual关键字指出该函数的性质。然而这么做并非必须，因为一旦某个函数被声明成虚函数，则在所有派生类中它都是虚函数。</p>
+<p>覆盖的虚函数的形参类型必须与被它覆盖的基类函数完全一致。返回类型也必须与基类函数匹配。</p>
+<p><strong>final和override说明符</strong></p>
+<p>如果派生类定义了一个函数与基类中虚函数的名字相同但是形参列表不同，这仍然是合法的行为。编译器将认为新定义的这个函数与基类中原有的函数是相互独立的。这时，派生类的函数并没有覆盖掉基类中的函数，这往往是一种失误，我们原本很可能希望覆盖。</p>
+<p>在C++11新标准中我们可以使用override关键字来说明派生类中的虚函数，这么做的好处是编译器可以为我们发现上述错误。如果我们使用override标记了某个函数，但该函数并没有覆盖已存在的虚函数，此时编译器将报错。</p>
+<p>我们还能把某个函数指定为final，如果函数定义成了final，则之后任何尝试覆盖该函数的操作都将引发错误。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">D</span> &#123;</span></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span>)</span> <span class="keyword">const</span> final</span>;	<span class="comment">// 不允许后续的其他类覆盖</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>虚函数与默认实参</strong></p>
+<p>虚函数可以拥有默认实参，如果某次函数调用使用了默认实参，则该实参值由本次调用的静态类型决定，即使用基类中定义的默认实参，即使实际运行的是派生类中的函数版本也是如此。</p>
+<p>如果虚函数使用默认实参，则基类和派生类中定义的默认实参最好一致。</p>
+<p><strong>回避虚函数机制</strong></p>
+<p>在某些情况下，我们希望对虚函数的调用不要进行动态绑定，而是强迫执行虚函数的某个特定版本。使用作用域运算符可以实现这一目的，例如：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">double</span> undiscounted = baseP-&gt;Quote::net_price(<span class="number">42</span>);</span><br></pre></td></tr></table></figure>
+<p>该代码强行调用Quote的net_price函数，而不管baseP实际指向的对象到底是什么。该调用将在编译时完成解析。</p>
+<p>!!!WARNING<br>​    如果一个派生类虚函数需要调用它的基类版本，但是没有使用作用域运算符，则在运行时该调用将被解析为对派生类版本的自身调用，从而导致无限递归。</p>
+<h2 id="抽象基类"><a href="#抽象基类" class="headerlink" title="抽象基类"></a>抽象基类</h2><p>通过在函数体的位置（即在声明语句的分号）书写=0就可以将一个虚函数说明为纯虚函数。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">net_price</span><span class="params">(<span class="built_in">std</span>::<span class="keyword">size_t</span>)</span> <span class="keyword">const</span> </span>= <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>含有纯虚函数的类是抽象基类</strong></p>
+<p>抽象基类负责定义接口，而后续的其他类可以覆盖该接口。我们不能（直接）创建一个抽象基类的对象。</p>
+<h2 id="访问控制与继承"><a href="#访问控制与继承" class="headerlink" title="访问控制与继承"></a>访问控制与继承</h2><p>每个类分别控制自己的成员初始化过程，与之类似，每个类还分别控制着其成员对于派生类来说是否<strong>可访问（accessible）</strong>。</p>
+<p><strong>受保护的成员</strong></p>
+<p>一个类使用protected关键字来声明那些它希望与派生类分享但是不想被其他公共访问使用的成员。protected说明符可以看做是public和private中和后的产物：</p>
 <ul>
-<li><p>ZooAnimal是整个继承体系的最终基类，最先初始化。</p>
+<li><p>和私有成员类似，受保护的成员对于类的用户来说是不可访问的。</p>
 </li>
-<li><p>接下来初始化Panda的第一个直接基类Bear。</p>
-</li>
-<li><p>然后初始化Panda的第二个直接基类Endangered。</p>
-</li>
-<li><p>最后初始化Panda。</p>
+<li><p>和公有成员类似，受保护的成员对于派生类的成员和友元来说是可访问的。</p>
 </li>
 </ul>
-<p><strong>继承的构造函数与多重继承</strong></p>
-<p>在C++11新标准中，允许派生类从它的一个或几个基类中继承构造函数。但是如果从多个基类中继承了相同的构造函数（即形参列表完全相同），则程序将产生错误：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Base1</span> &#123;</span></span><br><span class="line">	Base1(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Base2</span> &#123;</span></span><br><span class="line">	Base2(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 错误，试图从两个基类中继承D1::D1(const string&amp;)</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">D1</span> :</span> <span class="keyword">public</span> Base1, <span class="keyword">public</span> Base2 &#123;</span><br><span class="line">	<span class="keyword">using</span> Base1::Base1;			<span class="comment">// 从Base1继承构造函数</span></span><br><span class="line">	<span class="keyword">using</span> Base2::Base2;			<span class="comment">// 从Base2继承构造函数</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 解决办法：必须自定义一个接受string的构造函数</span></span><br><span class="line">	D1(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;s) : Base1(s), Base2(s) &#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p><strong>析构函数与多重继承</strong></p>
-<p>和往常一样，派生类的析构函数只负责清除派生类本身分配的资源，派生类的成员及基类都是自动销毁的。合成的析构函数体为空。</p>
-<p>析构函数的调用顺序正好与构造函数相反，在我们的例子中，析构函数的调用顺序是：~Panda, ~Endangered, ~Bear, ~ZooAnimal。</p>
-<p><strong>多重继承的派生类的拷贝与移动操作</strong></p>
-<p>与只有一个基类的继承一样，多重继承的派生类如果定义了自己的拷贝/赋值构造函数和赋值运算符，则必须在完整的对象上执行拷贝、移动或赋值操作。只有当派生类使用的是合成版本的拷贝、移动或赋值成员时，才会自动对基类部分执行这些操作。在合成的拷贝控制成员中，每个基类分别使用自己的对应成员隐式地完成构造、赋值或销毁等工作。</p>
-<h3 id="类型转换与多个基类"><a href="#类型转换与多个基类" class="headerlink" title="类型转换与多个基类"></a>类型转换与多个基类</h3><p>在只有一个基类的情况下，派生类的指针或引用能自动转换成一个可访问基类的指针或引用。多个基类的情况与之类似。我们可以令某个可访问的基类的指针或引用直接指向一个派生类对象。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 接受Panda的基类引用的一系列操作</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">const</span> Bear&amp;)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">highlight</span><span class="params">(<span class="keyword">const</span> Endangered&amp;)</span></span>;</span><br><span class="line">ostream&amp; <span class="keyword">operator</span>&lt;&lt;(ostream&amp;, <span class="keyword">const</span> ZooAnimal&amp;);</span><br><span class="line"></span><br><span class="line"><span class="function">Panda <span class="title">ying_yang</span><span class="params">(<span class="string">"ying_yang"</span>)</span></span>;</span><br><span class="line">print(ying_yang);					<span class="comment">// 绑定到Bear&amp;</span></span><br><span class="line">highlight(ying_yang);				<span class="comment">// 绑定到Endangered&amp;</span></span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; ying_yang &lt;&lt; <span class="built_in">endl</span>;			<span class="comment">// 绑定到ZooAnimal&amp;</span></span><br></pre></td></tr></table></figure>
-<p>编译器不会在派生类向基类的几种转换中进行比较和选择，因为在它看来转换到任意一种基类都一样好。如果存在如下所示的print重载形式：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">const</span> Bear&amp;)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">const</span> Endangered&amp;)</span></span>;</span><br></pre></td></tr></table></figure>
-<p>那么通过Panda对象这样调用print函数将产生二义性编译错误：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(ying_yang);</span><br></pre></td></tr></table></figure>
-<p>与只有一个基类的继承一样，对象、指针和引用的静态类型决定了我们能够使用哪些成员。</p>
-<h3 id="多重继承下的类作用域"><a href="#多重继承下的类作用域" class="headerlink" title="多重继承下的类作用域"></a>多重继承下的类作用域</h3><p>在只有一个基类的情况下，派生类的作用域嵌套在直接基类和间接基类的作用域中。查找过程沿着继承体系自底向上进行，直到找到所需的名字。派生类的名字将隐藏基类的同名成员。</p>
-<p>在多重继承的情况下，相同的查找过程在所有直接基类中同时进行。如果名字在多个基类中都被找到，则对该名字的使用将具有二义性。</p>
-<p>对于一个派生类来说，从它的几个基类中分别继承名字相同的成员是完全合法的，只不过在使用这个名字时必须明确指出它的版本。</p>
-<p>!!!warning<br>​    当一个类拥有多个基类时，有可能出现派生类从两个或更多基类中继承了同名成员的情况。此时，不加前缀限定符直接使用该名字将引发二义性。</p>
-<h3 id="虚继承"><a href="#虚继承" class="headerlink" title="虚继承"></a>虚继承</h3><p>尽管在派生列表中同一个基类只能出现一次，但实际上派生类可以多次继承同一个类。派生类可以通过它的两个直接基类分别继承同一个间接基类，也可以直接继承某个基类，然后通过另一个基类再一次间接继承该类。</p>
-<p>在默认情况下，派生类中含有继承链上每个类对应的子部分。如果某个类在派生过程中出现了多次，则派生类中将包含该类的多个子对象。</p>
-<p>在C++语言中我们通过虚继承（virtual inheritance）的机制解决上述问题。虚继承的目的是令某个类做出声明，承诺愿意共享它的基类。共享的基类子对象被称为虚基类（virtual base class）。在这种机制下，不论虚基类在继承体系中出现了多少次，在派生类中都只包含唯一一个共享的虚基类子对象。</p>
-<p>例如：</p>
-<p><img src="images/virtual_inheritance.png" alt=""></p>
-<p>!!!note<br>​    虚派生只影响从指定了虚基类的派生类中进一步派生出的类，它不会影响派生类本身。</p>
-<p><strong>使用虚基类</strong></p>
-<p>我们指定虚基类的方式是在派生列表中添加关键字virtual:</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 关键字public和virtual的顺序随意</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Raccoon</span> :</span> <span class="keyword">public</span> virtaul ZooAnimal &#123;&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bear</span> :</span> <span class="keyword">public</span> virtaul ZooAnimal &#123;&#125;;</span><br></pre></td></tr></table></figure>
-<p>上述代码将ZooAnimal定义为Raccoon和Bear的虚基类。</p>
-<p>virtual说明符表明了一种愿望，即在后续的派生类当中共享虚基类的同一份实例。至于什么样的类能够作为虚基类并没有特殊规定。如果某个类指定了虚基类，则该类的派生仍按常规方式进行：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Panda</span> :</span> <span class="keyword">public</span> Bear, <span class="keyword">public</span> Raccoon, <span class="keyword">public</span> Endangered &#123;&#125;;</span><br></pre></td></tr></table></figure>
-<p>Panda通过Raccon和Bear继承了ZooAnimal，因为Raccoon和Bear继承ZooAnimal的方式都是虚继承，所以在Panda中只有一个ZooAnimal基类部分。</p>
-<h3 id="构造函数与虚继承"><a href="#构造函数与虚继承" class="headerlink" title="构造函数与虚继承"></a>构造函数与虚继承</h3><p>在虚派生中，虚基类是由最低层的派生类初始化的。以我们的程序为例，当创建Panda对象时，由Panda的构造函数独自控制ZooAnimal的初始化过程。即使ZooAnimal不是Panda的直接基类，Panda的构造函数也可以初始化ZooAnimal：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Panda::Panda(<span class="built_in">std</span>::<span class="built_in">string</span> name, <span class="keyword">bool</span> onExhibit)</span><br><span class="line">	: ZooAnimal(name, onExhibit, <span class="string">"Panda"</span>),</span><br><span class="line">	Bear(name, onExhibit),</span><br><span class="line">	Raccoon(name, onExhibit),</span><br><span class="line">	Endangered(Endangered::critical),</span><br><span class="line">	sleeping_flag(<span class="literal">false</span>) &#123;&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>虚继承的对象的构造方式</strong></p>
-<p>含有虚基类的对象的构造顺序与一般的顺序稍有区别：首先使用提供给最低层派生类构造函数的初始值初始化该对象的虚基类子部分，接下来按照直接基类在派生列表中出现的次序依次对齐进行初始化。</p>
-<p>例如，当我们创建一个Panda对象时：</p>
+<p>此外，protected还有一条重要的性质：</p>
 <ul>
-<li><p>首先构造虚基类ZooAnimal。</p>
+<li>派生类的成员或友元只能通过派生类对象来访问基类的受保护成员。派生类对于一个基类对象中受保护成员没有任何访问权限。</li>
+</ul>
+<p>上述规则可以用下面的例子来理解：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span> &#123;</span></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">	<span class="keyword">int</span> prot_mem;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Sneaky</span> :</span> <span class="keyword">public</span> Base &#123;</span><br><span class="line">	<span class="function"><span class="keyword">friend</span> <span class="keyword">void</span> <span class="title">clobber</span><span class="params">(Sneaky&amp;)</span></span>;		<span class="comment">// 能访问Sneaky::prot_mem</span></span><br><span class="line">	<span class="function"><span class="keyword">friend</span> <span class="keyword">void</span> <span class="title">clobber</span><span class="params">(Base&amp;)</span></span>;			<span class="comment">// 不能访问Base::prot_mem</span></span><br><span class="line">	<span class="keyword">int</span> j;								<span class="comment">// j默认是private</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 正确：clobber能访问Sneaky对象的private和protected成员</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clobber</span><span class="params">(Sneaky &amp;s)</span> </span>&#123; s.j = s.prot_mem = <span class="number">0</span>; &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 错误：clobber不能访问Base的protected成员</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clobber</span><span class="params">(Base &amp;b)</span> </span>&#123; b.prot_mem = <span class="number">0</span>; &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>公有、私有和受保护继承</strong></p>
+<p>某个类对其继承而来的成员的访问权限受到两个因素影响：</p>
+<ul>
+<li><p>一是在基类中该成员的访问说明符。</p>
 </li>
-<li><p>接下来构造Bear部分。</p>
-</li>
-<li><p>然后构造Raccoon部分。</p>
-</li>
-<li><p>然后构造第三个直接基类Endangered。</p>
-</li>
-<li><p>最后构造Panda部分。</p>
+<li><p>二是在派生类的派生列表中的访问说明符。</p>
 </li>
 </ul>
-<p>!!!note<br>​    虚基类总是先于非虚基类构造，与它们在继承体系中的次序和位置无关。</p>
-<p><strong>构造函数与析构函数的次序</strong></p>
-<p>一个类可以有多个虚基类。此时，这些虚的子对象按照它们在派生列表中出现的顺序从左向右依次构造。</p>
-<p>合成的拷贝和移动构造函数按照完全相同的顺序执行，合成的赋值运算符中的成员也按照该顺序赋值。和往常一样，对象的销毁顺序与构造函数正好相反。</p>
+<p>派生访问说明符对于派生类的成员（及友元）能否访问其直接基类的成员没什么影响，对基类成员的访问权限只与基类中的访问说明符有关。</p>
+<blockquote>
+<p>my note: 派生列表中的访问说明符限制了派生类用户对继承而来的成员的访问权限，而基类的成员访问说明符限制了基类用户的访问权限，这里的用户也包括了派生类。</p>
+</blockquote>
+<p><strong>派生类向基类转换的可访问性</strong></p>
+<p>派生类向基类的转换是否可访问由使用该转换的代码决定，同时派生类的派生访问说明符也会有影响。假定D继承自B：</p>
+<ul>
+<li><p>只有当D公有地继承B时，用户代码才能使用派生类向基类的转换；如果D继承B的方式是受保护的或者私有的，则用户代码不能使用该转换。</p>
+</li>
+<li><p>不论以什么方式继承B，D的成员和友元都能使用派生类向基类的转换；派生类向其直接基类的类型转换对于派生类的成员和友元来说都是可访问的。</p>
+</li>
+<li><p>如果D继承B的方式是公有的或者受保护的，则D的派生类的成员和友元可以使用D向B的转换；反之，如果D继承B的方式是私有的，则不能使用。</p>
+</li>
+</ul>
+<p>!!!tip<br>​    对于代码中的某个给定节点来说，如果基类的公有成员是可访问的，则派生类向基类的类型转换也是可访问的；反之则不行。</p>
+<p>关于这个概念可以参考<a href="https://github.com/demon90s/CppStudy/tree/master/CppPrimer/labs/test_derived_to_base.cpp" target="_blank" rel="noopener">==测试代码==</a></p>
+<p><strong>友元与继承</strong></p>
+<p>友元关系不能继承，基类的友元在访问派生类成员时不具有特殊性，类似的，派生类的友元也不能随意访问基类的成员。</p>
+<p><strong>改变个别成员的可访问性</strong></p>
+<p>有时候我们需要改变派生类继承的某个名字的访问级别，通过using声明可以达到这一目的：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="built_in">std</span>::<span class="keyword">size_t</span> size() <span class="keyword">const</span> &#123; <span class="keyword">return</span> n; &#125;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">	<span class="built_in">std</span>::<span class="keyword">size_t</span> n;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derived</span> :</span> <span class="keyword">private</span> Base &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="comment">// 令size成员保持public访问级别</span></span><br><span class="line">	<span class="keyword">using</span> Base::size;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">	<span class="keyword">using</span> Base::n;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>因为Derived使用了私有继承，所以继承而来的成员size和n默认情况下是Derived的私有成员。然而，我们使用using声明语句改变了这些成员的可访问性。</p>
+<p>通过在类的内部使用using声明语句，我们可以将该类的直接或间接基类中任何可访问成员标记出来。using声明语句中名字的访问权限由该using声明语句之前的访问说明符来决定。</p>
+<p>!!!note<br>​    派生类只能为那些它可以访问的名字提供using声明。</p>
+<h2 id="继承中的类作用域"><a href="#继承中的类作用域" class="headerlink" title="继承中的类作用域"></a>继承中的类作用域</h2><p>每个类定义自己的作用域，在这个作用域内我们定义类的成员。</p>
+<p>当存在继承关系时，派生类的作用域嵌套在其基类的作用域之内，所以派生类才能像使用自己的成员一样使用基类的成员。</p>
+<p><strong>在编译时进行名字查找</strong></p>
+<p>一个对象、引用或指针的静态类型决定了该对象的哪些成员是可见的。即使静态类型与动态类型可能不一致（当使用基类的引用或指针时会发生这种情况），但是我们能使用哪些成员仍然是由静态类型决定的。</p>
+<p><strong>名字冲突与继承</strong></p>
+<p>和其他作用域一样，派生类也能重用定义在其直接基类或间接基类中的名字，此时定义在内层作用域（即派生类）的名字将隐藏定义在外层作用域（即基类）的名字。</p>
+<p><strong>通过作用域运算符来使用隐藏的成员</strong></p>
+<p>作用域运算符将覆盖掉原有的查找规则。</p>
+<p>!!!note<br>​    除了覆盖继承而来的虚函数之外，派生类最好不要重用其他定义在基类中的名字。</p>
+<h2 id="构造函数与拷贝控制"><a href="#构造函数与拷贝控制" class="headerlink" title="构造函数与拷贝控制"></a>构造函数与拷贝控制</h2><p>和其他类一样，位于继承体系中的类也需要控制当其对象执行一系列操作时发送什么样的行为，这些操作包括创建、拷贝、移动、赋值和销毁。</p>
+<h3 id="虚析构函数"><a href="#虚析构函数" class="headerlink" title="虚析构函数"></a>虚析构函数</h3><p>继承关系对基类拷贝控制最直接的影响是基类通常应该定义一个虚析构函数，这样我们就能动态分配继承体系中的对象了。</p>
+<p>当我们delete一个动态分配的对象的指针时，将执行析构函数。如果该指针指向继承体系中的某个类型，则有可能出现指针的静态类型与被删除对象的动态类型不符的情况。我们通过在基类中奖析构函数定义成虚析构函数以确保执行正确的析构函数版本。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Quote</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="comment">// 如果我们删除的是一个指向派生类对象的基类指针，则需要虚析构函数</span></span><br><span class="line">	<span class="keyword">virtual</span> ~Quote() = <span class="keyword">default</span>;	<span class="comment">// 动态绑定析构函数</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>!!!warning<br>​    如果基类的析构函数不是虚函数，则delete一个指向派生类对象的基类指针将产生未定义的行为。</p>
+<p>之前介绍的经验准则说，如果一个类需要析构函数，那么它同样需要拷贝和赋值操作。但这里基类的析构函数并不遵顼这个准则，它是一个重要的例外。</p>
+<p>虚析构函数还将阻止合成移动操作。</p>
+<h3 id="合成拷贝控制与继承"><a href="#合成拷贝控制与继承" class="headerlink" title="合成拷贝控制与继承"></a>合成拷贝控制与继承</h3><p>基类或派生类的合成拷贝控制成员的行为与其他合成的构造函数、赋值运算符或析构函数类似：它们对类本身的成员依次进行初始化、赋值或销毁操作。此外，合成的成员还负责使用直接基类中对应的操作对一个对象的直接基类部分进行初始化、赋值或销毁的操作。例如：</p>
+<ul>
+<li>合成的Bulk_quote默认构造函数运行Disc_quote的默认构造函数，后者又运行Quote的默认构造函数。</li>
+</ul>
+<p>对于派生类的析构函数来说，它除了销毁派生类自己的成员外，还负责销毁派生类的直接基类；该直接基类又销毁它自己的直接基类，以此类推直至继承链的顶端。</p>
+<h3 id="派生类的拷贝控制成员"><a href="#派生类的拷贝控制成员" class="headerlink" title="派生类的拷贝控制成员"></a>派生类的拷贝控制成员</h3><p>派生类的拷贝和移动构造函数在拷贝和移动自有成员的同时，也要拷贝和移动基类部分的成员。类似的，派生类赋值运算符也必须为其基类部分的成员赋值。</p>
+<p>和构造函数及赋值运算符不同的是，析构函数只负责销毁派生类自己分配的资源。派生类对象的基类部分是自动销毁的。</p>
+<p><strong>定义派生类的拷贝或移动构造函数</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span> &#123;</span> <span class="comment">/**/</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">D</span> :</span> <span class="keyword">public</span> Base &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="comment">// 默认情况下，基类的默认构造函数初始化对象的基类部分</span></span><br><span class="line">	<span class="comment">// 要想使用拷贝或移动构造函数，我们必须在构造函数初始值列表中显式地调用该构造函数</span></span><br><span class="line">	D(<span class="keyword">const</span> D &amp;d) : Base(d) &#123;&#125;</span><br><span class="line">	D(<span class="keyword">const</span> &amp;&amp;d) : Base(<span class="built_in">std</span>::move(d)) &#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><strong>派生类赋值运算符</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Base::operator=(const Base&amp;) 不会被自动调用</span></span><br><span class="line">D &amp;D::<span class="keyword">operator</span>=(<span class="keyword">const</span> D &amp;rhs)</span><br><span class="line">&#123;</span><br><span class="line">	Base::<span class="keyword">operator</span>=(rhs); <span class="comment">// 为基类部分赋值</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>派生类析构函数</strong></p>
+<p>在析构函数体执行完成后，对象的成员会被隐式销毁。类似的，对象的基类部分也是隐式销毁的。因此，和构造函数及赋值运算符不同的是，派生类析构函数只负责销毁由派生类自己分配的资源：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">D</span> :</span> <span class="keyword">public</span> Base &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="comment">// Base::~Base被自动调用执行</span></span><br><span class="line">	~D() &#123; <span class="comment">/* 该处由用户定义清除派生类成员的操作 */</span> &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>对象销毁的顺序正好与其创建的顺序相反：派生类析构函数首先执行，然后是基类的析构函数，以此类推，沿着继承体系的反方向直到最后。</p>
+<h3 id="继承的构造函数"><a href="#继承的构造函数" class="headerlink" title="继承的构造函数"></a>继承的构造函数</h3><p>在C++11新标准中，派生类能够重用其直接基类定义的构造函数。</p>
+<p>一个类只初始化它的直接基类，出于同样的原因，一个类也只继承其直接基类的构造函数。类不能继承默认、拷贝和移动构造函数。如果派生类没有直接定义这些构造函数，则编译器将为派生类合成它们。</p>
+<p>派生类继承基类构造函数的方式是提供一条注明了（直接）基类名的using声明语句。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bulk_quote</span> :</span> <span class="keyword">public</span> Disc_quote &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="keyword">using</span> Disc_quote::Disc_quote; <span class="comment">// 继承Disc_quote的构造函数</span></span><br><span class="line">	<span class="function"><span class="keyword">double</span> <span class="title">net_price</span><span class="params">(<span class="built_in">std</span>::<span class="keyword">size_t</span>)</span> <span class="keyword">const</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>通常情况下，using声明语句只是令某个名字在当前作用域内可见。当当作用于构造函数时，using声明语句将令编译器产生代码。对于基类的每个构造函数，编译器都在派生类中生成一个形参列表完全相同的构造函数。</p>
+<p>在Bulk_quote类中，继承的构造函数等价于：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Bulk_quote(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;book, <span class="keyword">double</span> price, <span class="built_in">std</span>::<span class="keyword">size_t</span> qty, <span class="keyword">double</span> disc) :</span><br><span class="line">	Disc_quote(book, price, qty, disc) &#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>如果派生类含有自己的数据成员，则这些成员将被默认初始化。</p>
 
           
         
