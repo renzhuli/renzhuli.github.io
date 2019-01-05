@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="第三章 字符串、向量和数组 命名空间的using声明有如下形式： 1using namespace::name; 使用完using声明（using declaration）后，就可以省略掉名字前的前缀了（如std::）。 1234567891011#include &amp;lt;iostream&amp;gt;using std::cin;int main()&amp;#123;    int i;    cin &amp;g">
+<meta name="description" content="命名空间的using声明有如下形式： 1using namespace::name; 使用完using声明（using declaration）后，就可以省略掉名字前的前缀了（如std::）。 1234567891011#include &amp;lt;iostream&amp;gt;using std::cin;int main()&amp;#123;    int i;    cin &amp;gt;&amp;gt; i;">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Keyanbuluo">
+<meta property="og:title" content="第三章 字符串、向量和数组">
 <meta property="og:url" content="http://yoursite.com/2019/01/05/ch03 字符串、向量和数组/index.html">
 <meta property="og:site_name" content="Keyanbuluo">
-<meta property="og:description" content="第三章 字符串、向量和数组 命名空间的using声明有如下形式： 1using namespace::name; 使用完using声明（using declaration）后，就可以省略掉名字前的前缀了（如std::）。 1234567891011#include &amp;lt;iostream&amp;gt;using std::cin;int main()&amp;#123;    int i;    cin &amp;g">
+<meta property="og:description" content="命名空间的using声明有如下形式： 1using namespace::name; 使用完using声明（using declaration）后，就可以省略掉名字前的前缀了（如std::）。 1234567891011#include &amp;lt;iostream&amp;gt;using std::cin;int main()&amp;#123;    int i;    cin &amp;gt;&amp;gt; i;">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-01-01T15:13:23.000Z">
+<meta property="og:updated_time" content="2019-01-05T14:31:03.720Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Keyanbuluo">
-<meta name="twitter:description" content="第三章 字符串、向量和数组 命名空间的using声明有如下形式： 1using namespace::name; 使用完using声明（using declaration）后，就可以省略掉名字前的前缀了（如std::）。 1234567891011#include &amp;lt;iostream&amp;gt;using std::cin;int main()&amp;#123;    int i;    cin &amp;g">
+<meta name="twitter:title" content="第三章 字符串、向量和数组">
+<meta name="twitter:description" content="命名空间的using声明有如下形式： 1using namespace::name; 使用完using声明（using declaration）后，就可以省略掉名字前的前缀了（如std::）。 1234567891011#include &amp;lt;iostream&amp;gt;using std::cin;int main()&amp;#123;    int i;    cin &amp;gt;&amp;gt; i;">
 
 
 
@@ -125,7 +125,7 @@
 
 
 
-  <title> | Keyanbuluo</title>
+  <title>第三章 字符串、向量和数组 | Keyanbuluo</title>
   
 
 
@@ -249,7 +249,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline"></h1>
+          <h1 class="post-title" itemprop="name headline">第三章 字符串、向量和数组</h1>
         
 
         <div class="post-meta">
@@ -299,7 +299,7 @@
       
 
       
-        <h1 id="第三章-字符串、向量和数组"><a href="#第三章-字符串、向量和数组" class="headerlink" title="第三章 字符串、向量和数组"></a>第三章 字符串、向量和数组</h1><hr>
+        <hr>
 <h2 id="命名空间的using声明"><a href="#命名空间的using声明" class="headerlink" title="命名空间的using声明"></a>命名空间的using声明</h2><p>有如下形式：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span>::name;</span><br></pre></td></tr></table></figure>
 <p>使用完using声明（using declaration）后，就可以省略掉名字前的前缀了（如std::）。</p>
@@ -383,7 +383,7 @@
 <h3 id="向vector中添加元素"><a href="#向vector中添加元素" class="headerlink" title="向vector中添加元素"></a>向vector中添加元素</h3><p>push_back函数把一个元素压入vector对象的尾端。</p>
 <p>vector的对象能高效地增长，因此更常见的情况是：创建一个空vector，然后在运行时再利用vector的成员函数push_back向其中添加元素。</p>
 <p><strong>一定不能在遍历vector的时候改变vector对象的大小。</strong></p>
-<p>!!!note “关键概念：vector对象能高效增长”<br>    C++标准要求vector应该能在运行时高效快速地添加元素。因此既然vector对象能高效地增长，那么在定义vector对象的时候设定其大小就没有什么必要了，只有一种例外，即当所有元素的值都一样。一旦元素的值有所不同，更有效的办法是先定义一个空的vector对象，再在运行时向其中添加具体值。</p>
+<p>!!!note “关键概念：vector对象能高效增长”<br>​    C++标准要求vector应该能在运行时高效快速地添加元素。因此既然vector对象能高效地增长，那么在定义vector对象的时候设定其大小就没有什么必要了，只有一种例外，即当所有元素的值都一样。一旦元素的值有所不同，更有效的办法是先定义一个空的vector对象，再在运行时向其中添加具体值。</p>
 <h3 id="其它vector操作"><a href="#其它vector操作" class="headerlink" title="其它vector操作"></a>其它vector操作</h3><p>如（很多和string类似）：</p>
 <ul>
 <li><p><code>v.empty()</code>，如果v不含有任何元素，返回true</p>
@@ -488,7 +488,7 @@
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span> i : arr)</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; i &lt;&lt; <span class="string">" "</span>;</span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br></pre></td></tr></table></figure>
 <p><strong>检查下标的值</strong></p>
 <p>与string和vector一样，数组的下标是否在合理范围之内由程序员负责检查。</p>
-<p>!!!warning<br>    大多数常见的安全问题都源于缓冲区溢出错误。当数组或其他类似数据结构的下标越界并试图访问非法内存区域时，就会产生此类错误。</p>
+<p>!!!warning<br>​    大多数常见的安全问题都源于缓冲区溢出错误。当数组或其他类似数据结构的下标越界并试图访问非法内存区域时，就会产生此类错误。</p>
 <h3 id="指针和数组"><a href="#指针和数组" class="headerlink" title="指针和数组"></a>指针和数组</h3><p>在很多用到数组名字的地方，编译器都会自动地将其替换为一个<strong>指向数组首元素的指针</strong>。</p>
 <p><strong>decltype</strong></p>
 <p>下面得到一个数组类型：</p>
@@ -566,8 +566,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/01/05/ch19 特殊工具与技术/" rel="next" title="">
-                <i class="fa fa-chevron-left"></i> 
+              <a href="/2019/01/05/ch05 语句/" rel="next" title="第五章 语句">
+                <i class="fa fa-chevron-left"></i> 第五章 语句
               </a>
             
           </div>
@@ -692,7 +692,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#第三章-字符串、向量和数组"><span class="nav-number">1.</span> <span class="nav-text">第三章 字符串、向量和数组</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#命名空间的using声明"><span class="nav-number">1.1.</span> <span class="nav-text">命名空间的using声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标准库类型string"><span class="nav-number">1.2.</span> <span class="nav-text">标准库类型string</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义和初始化string对象"><span class="nav-number">1.2.1.</span> <span class="nav-text">定义和初始化string对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#string对象上的操作"><span class="nav-number">1.2.2.</span> <span class="nav-text">string对象上的操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#处理string对象中的字符"><span class="nav-number">1.2.3.</span> <span class="nav-text">处理string对象中的字符</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标准库类型vector"><span class="nav-number">1.3.</span> <span class="nav-text">标准库类型vector</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义和初始化vector对象"><span class="nav-number">1.3.1.</span> <span class="nav-text">定义和初始化vector对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#向vector中添加元素"><span class="nav-number">1.3.2.</span> <span class="nav-text">向vector中添加元素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其它vector操作"><span class="nav-number">1.3.3.</span> <span class="nav-text">其它vector操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#迭代器介绍"><span class="nav-number">1.4.</span> <span class="nav-text">迭代器介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用迭代器"><span class="nav-number">1.4.1.</span> <span class="nav-text">使用迭代器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#迭代器运算"><span class="nav-number">1.4.2.</span> <span class="nav-text">迭代器运算</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数组"><span class="nav-number">1.5.</span> <span class="nav-text">数组</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义和初始化内置数组"><span class="nav-number">1.5.1.</span> <span class="nav-text">定义和初始化内置数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#访问数组元素"><span class="nav-number">1.5.2.</span> <span class="nav-text">访问数组元素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#指针和数组"><span class="nav-number">1.5.3.</span> <span class="nav-text">指针和数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C风格字符串"><span class="nav-number">1.5.4.</span> <span class="nav-text">C风格字符串</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多维数组"><span class="nav-number">1.6.</span> <span class="nav-text">多维数组</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#命名空间的using声明"><span class="nav-number">1.</span> <span class="nav-text">命名空间的using声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标准库类型string"><span class="nav-number">2.</span> <span class="nav-text">标准库类型string</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义和初始化string对象"><span class="nav-number">2.1.</span> <span class="nav-text">定义和初始化string对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#string对象上的操作"><span class="nav-number">2.2.</span> <span class="nav-text">string对象上的操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#处理string对象中的字符"><span class="nav-number">2.3.</span> <span class="nav-text">处理string对象中的字符</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标准库类型vector"><span class="nav-number">3.</span> <span class="nav-text">标准库类型vector</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义和初始化vector对象"><span class="nav-number">3.1.</span> <span class="nav-text">定义和初始化vector对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#向vector中添加元素"><span class="nav-number">3.2.</span> <span class="nav-text">向vector中添加元素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其它vector操作"><span class="nav-number">3.3.</span> <span class="nav-text">其它vector操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#迭代器介绍"><span class="nav-number">4.</span> <span class="nav-text">迭代器介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用迭代器"><span class="nav-number">4.1.</span> <span class="nav-text">使用迭代器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#迭代器运算"><span class="nav-number">4.2.</span> <span class="nav-text">迭代器运算</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数组"><span class="nav-number">5.</span> <span class="nav-text">数组</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义和初始化内置数组"><span class="nav-number">5.1.</span> <span class="nav-text">定义和初始化内置数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#访问数组元素"><span class="nav-number">5.2.</span> <span class="nav-text">访问数组元素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#指针和数组"><span class="nav-number">5.3.</span> <span class="nav-text">指针和数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C风格字符串"><span class="nav-number">5.4.</span> <span class="nav-text">C风格字符串</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多维数组"><span class="nav-number">6.</span> <span class="nav-text">多维数组</span></a></li></ol></div>
             
 
           </div>
