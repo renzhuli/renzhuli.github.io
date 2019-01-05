@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="第十一章 关联容器关联容器与顺序容器有着根本的不同：  关联容器中的元素是按关键字来保存和访问的。  顺序容器中的元素是按它们在容器中的位置来顺序保存和访问的。   关联容器支持高效的关键字查找和访问，有两个主要的关联容器：  map，其元素是一些关键字-值对，关键字起到索引作用，值则表示与之相关的数据。  set，每个元素只包含一个关键字。    使用关联容器map是关键字-值对的集合，通常被称">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Keyanbuluo">
+<meta property="og:url" content="http://yoursite.com/2019/01/05/ch11 关联容器/index.html">
+<meta property="og:site_name" content="Keyanbuluo">
+<meta property="og:description" content="第十一章 关联容器关联容器与顺序容器有着根本的不同：  关联容器中的元素是按关键字来保存和访问的。  顺序容器中的元素是按它们在容器中的位置来顺序保存和访问的。   关联容器支持高效的关键字查找和访问，有两个主要的关联容器：  map，其元素是一些关键字-值对，关键字起到索引作用，值则表示与之相关的数据。  set，每个元素只包含一个关键字。    使用关联容器map是关键字-值对的集合，通常被称">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-01-01T15:13:23.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Keyanbuluo">
+<meta name="twitter:description" content="第十一章 关联容器关联容器与顺序容器有着根本的不同：  关联容器中的元素是按关键字来保存和访问的。  顺序容器中的元素是按它们在容器中的位置来顺序保存和访问的。   关联容器支持高效的关键字查找和访问，有两个主要的关联容器：  map，其元素是一些关键字-值对，关键字起到索引作用，值则表示与之相关的数据。  set，每个元素只包含一个关键字。    使用关联容器map是关键字-值对的集合，通常被称">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/01/05/ch11 关联容器/">
+
+
+
+
+
+  <title> | Keyanbuluo</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Keyanbuluo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/05/ch11 关联容器/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jinghua Ren">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Keyanbuluo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline"></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-05T22:23:00+08:00">
+                2019-01-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="第十一章-关联容器"><a href="#第十一章-关联容器" class="headerlink" title="第十一章 关联容器"></a>第十一章 关联容器</h1><p>关联容器与顺序容器有着根本的不同：</p>
+<ul>
+<li><p>关联容器中的元素是按关键字来保存和访问的。</p>
+</li>
+<li><p>顺序容器中的元素是按它们在容器中的位置来顺序保存和访问的。</p>
+</li>
+</ul>
+<p>关联容器支持高效的关键字查找和访问，有两个主要的关联容器：</p>
+<ul>
+<li><p>map，其元素是一些关键字-值对，关键字起到索引作用，值则表示与之相关的数据。</p>
+</li>
+<li><p>set，每个元素只包含一个关键字。</p>
+</li>
+</ul>
+<hr>
+<h2 id="使用关联容器"><a href="#使用关联容器" class="headerlink" title="使用关联容器"></a>使用关联容器</h2><p>map是关键字-值对的集合，通常被称为关联数组。关联数组与“正常”数组类似，不同之处在于其下标不必是整数。我们通过一个关键字而不是位置来查找值。</p>
+<p>set就是关键字的简单集合。</p>
+<p>具体使用案例见书本p375。</p>
+<h2 id="关联容器概述"><a href="#关联容器概述" class="headerlink" title="关联容器概述"></a>关联容器概述</h2><p>关联容器（有序的和无序的）都支持9.2节（第294页）中介绍的普通容器操作。关联容器不支持顺序容器的位置相关的操作，例如push_front。</p>
+<p>除了与顺序容器相同的操作之外，关联容器还支持一些顺序容器不支持的操作（见p388）和类型别名（见p381）。</p>
+<p>关联容器的迭代器都是双向的。</p>
+<h3 id="定义关联容器"><a href="#定义关联容器" class="headerlink" title="定义关联容器"></a>定义关联容器</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">map</span>&lt;<span class="built_in">string</span>, <span class="keyword">size_t</span>&gt; word_count; <span class="comment">// 空容器</span></span><br><span class="line"><span class="built_in">set</span>&lt;<span class="built_in">string</span>&gt; exclude = &#123;<span class="string">"the"</span>, <span class="string">"but"</span>, <span class="string">"and"</span>&#125;; <span class="comment">// 列表初始化</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 三个元素；authors将姓映射为名</span></span><br><span class="line"><span class="built_in">map</span>&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt; authors = &#123;</span><br><span class="line">    &#123;<span class="string">"Joyce"</span>, <span class="string">"James"</span>&#125;,</span><br><span class="line">    &#123;<span class="string">"Austen"</span>, <span class="string">"Jane"</span>&#125;,</span><br><span class="line">    &#123;<span class="string">"Dickens"</span>, <span class="string">"Charles"</span>&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><strong>初始化multimap或multiset</strong></p>
+<p>一个map或set中的关键字必须是唯一的，即，对于一个给定的关键字，只能有一个元素的关键字等于它。</p>
+<p>multimap和multiset没有此限制，它们都允许多个元素具有相同的关键字（这些元素会相邻存储）。</p>
+<h3 id="关键字类型的要求"><a href="#关键字类型的要求" class="headerlink" title="关键字类型的要求"></a>关键字类型的要求</h3><p>对于有序容器，关键字类型必须定义元素比较的方法，默认情况下，标准库使用关键字类型的&lt;运算符来比较两个关键字。</p>
+<p><strong>使用关键字类型的比较函数</strong></p>
+<p>用来组织一个容器中元素的操作的类型也是该容器类型的一部分。为了指定使用自定义的操作，必须在定义关联容器类型时提供此操作的类型（比如一个函数指针类型）。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">compareIsbn</span><span class="params">(<span class="keyword">const</span> Sales_data &amp;lhs, <span class="keyword">const</span> Sales_data &amp;rhs)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> lhs.isbn() &lt; rhs.isbn();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">multiset</span>&lt;Sales_data, <span class="keyword">decltype</span>(compareIsbn)*&gt; bookstore(compareIsbn);</span><br></pre></td></tr></table></figure>
+<h3 id="pair类型"><a href="#pair类型" class="headerlink" title="pair类型"></a>pair类型</h3><p>pair类型定义在头文件utility中。</p>
+<p>一个pair保存两个数据成员，pair是一个用来生成特定类型的模板。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pair&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt; anon; <span class="comment">// 保存两个string</span></span><br><span class="line">pair&lt;<span class="built_in">string</span>, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&gt; line; <span class="comment">// 保存string和vector&lt;int&gt;</span></span><br></pre></td></tr></table></figure>
+<p>pair的默认构造函数对数据成员进行值初始化。也可以为每个成员提供初始化器：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pair&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt; author&#123;<span class="string">"James"</span>, <span class="string">"Joyce"</span>&#125;;</span><br></pre></td></tr></table></figure>
+<p>pair的数据成员是public的，两个成员分别是first，second。</p>
+<p><strong>创建pair对象的函数</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">pair&lt;<span class="built_in">string</span>, <span class="keyword">int</span>&gt;</span><br><span class="line">process(<span class="built_in">vector</span>&lt;<span class="built_in">string</span>&gt; &amp;v)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 处理v</span></span><br><span class="line">    <span class="keyword">if</span> (!v.empty())</span><br><span class="line">        <span class="keyword">return</span> &#123;v.back(), v.back().size()&#125;; <span class="comment">// 列表初始化</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> pair&lt;<span class="built_in">string</span>, <span class="keyword">int</span>&gt;(); <span class="comment">// 隐式构造返回值</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="关联容器操作"><a href="#关联容器操作" class="headerlink" title="关联容器操作"></a>关联容器操作</h2><p>除了表9.2(第295页)中列出的类型，关联容器还定义了这些类型：</p>
+<ul>
+<li><p>key_type, 此容器类型的关键字类型</p>
+</li>
+<li><p>mapped_type, 每个关键字关联的类型，只适用于map</p>
+</li>
+<li><p>value_type, 对于set，与key_type相同，对于map, 为<code>pair&lt;const key_type, mapped_type&gt;</code></p>
+</li>
+</ul>
+<h3 id="关联容器迭代器"><a href="#关联容器迭代器" class="headerlink" title="关联容器迭代器"></a>关联容器迭代器</h3><p>当解引用一个关联容器迭代器时，我们会得到一个类型为容器的value_type的值的引用。对map而言，value_type是一个pair类型。</p>
+<p>!!!note<br>    必须记住，一个map的value_type是一个pair，我们可以改变pair的值，但不能改变关键字成员的值。</p>
+<p><strong>set的迭代器是const的</strong></p>
+<p>与不能改名map元素的关键字一样，一个set中的关键字也是const的。可以用一个set迭代器来读取元素的值，但不能修改。</p>
+<p><strong>遍历关联容器</strong></p>
+<p>map和set类型都支持begin和end操作，我们可以利用这些函数获取迭代器，然后用迭代器来遍历容器。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> map_it = word_count.cbegin();</span><br><span class="line"><span class="keyword">while</span> (map_it != word_count.cend()) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    ++map_it; <span class="comment">// 递增迭代器，移动到下一个元素</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>!!!note<br>    当使用一个迭代器遍历一个map、multimap、set或multiset时，迭代器按关键字升序遍历元素。</p>
+<p><strong>关联容器和算法</strong></p>
+<p>我们通常不对关联容器使用泛型算法。更多讨论见书本p383。</p>
+<h3 id="添加元素"><a href="#添加元素" class="headerlink" title="添加元素"></a>添加元素</h3><p>关联容器的insert成员向容器中添加一个元素或一个元素范围。由于map和set包含不重复的关键字，因此插入一个已存在的元素对容器没有任何影响。</p>
+<p><strong>向map添加元素</strong></p>
+<p>对一个map进行insert操作时，必须记住元素类型是pair。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">word_count.insert(&#123;word, <span class="number">1</span>&#125;);</span><br><span class="line">word_count.insert(make_pair(word, <span class="number">1</span>));</span><br><span class="line">word_count.insert(pair&lt;<span class="built_in">string</span>, <span class="keyword">size_t</span>&gt;(word, <span class="number">1</span>));</span><br><span class="line">word_count.insert(<span class="built_in">map</span>&lt;<span class="built_in">string</span>, <span class="keyword">size_t</span>&gt;::value_type(word, <span class="number">1</span>));</span><br></pre></td></tr></table></figure>
+<p><strong>向multiset或multimap添加元素</strong></p>
+<p>由于一个multi容器中的关键字不必唯一，在这些类型上调用insert总会插入一个元素：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">multimap</span>&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt; authors;</span><br><span class="line"><span class="comment">// 插入第一个元素</span></span><br><span class="line">authors.insert(&#123;<span class="string">"Barth, John"</span>, <span class="string">"Sot-Weed Factor"</span>&#125;);</span><br><span class="line"><span class="comment">// 正确，添加第二个元素</span></span><br><span class="line">authors.insert(&#123;<span class="string">"Barth, John"</span>&#125;, <span class="string">"Lost in the Funhouse"</span>);</span><br></pre></td></tr></table></figure>
+<p>对允许重复关键字的容器，接受单个元素的insert操作返回一个指向新元素的迭代器。</p>
+<h3 id="删除元素"><a href="#删除元素" class="headerlink" title="删除元素"></a>删除元素</h3><p>关联容器定义了三个版本的erase：</p>
+<ul>
+<li><p>与顺序容器一样，传递给erase一个迭代器或一个迭代器范围来删除一个元素或一个元素范围。</p>
+</li>
+<li><p>接受一个key_type参数，删除所有匹配给定关键字的元素（如果存在的话），返回实际删除的元素的数量。</p>
+</li>
+</ul>
+<p>对于保存不重复关键字的容器，erase的返回值总是0或1。</p>
+<h3 id="map的下标操作"><a href="#map的下标操作" class="headerlink" title="map的下标操作"></a>map的下标操作</h3><p>map和unordered_map容器提供了下标运算符和一个对应的at函数。</p>
+<p>set类型不支持下标操作，不能对一个multimap或一个unordered_multimap进行下标操作，因为这些容器中可能有多个值与一个关键字相关联。</p>
+<p>map下标运算符接受一个索引获取与此关键字相关联的值，如果关键字不在map中，会为它创建一个元素并插入到map中，关联值将进行值初始化。</p>
+<p><strong>使用下标操作的返回值</strong></p>
+<p>当对一个map进行下标操作时，会获得一个mapped_type对象。</p>
+<p>当解引用一个map迭代器时，会得到一个value_type对象。</p>
+<p>!!!note<br>    与vector与string不同，map的下标运算符返回的类型与解引用map迭代器得到的类型不同。</p>
+<h3 id="访问元素"><a href="#访问元素" class="headerlink" title="访问元素"></a>访问元素</h3><p>如果我们关心的只不过是一个特定元素是否已在容器中，使用find比较好。</p>
+<p>对于不允许重复关键字的容器，可能使用find还是count没什么区别。</p>
+<p>对于允许重复关键字的容器，count会统计有多少个元素有相同的关键字。</p>
+<h2 id="无序容器"><a href="#无序容器" class="headerlink" title="无序容器"></a>无序容器</h2><p>无序容器不是使用比较运算符来组织元素，而是使用一个哈希函数和关键字类型的==运算符。</p>
+<p>在关键字类型的元素没有明显的序关系的情况下，无序容器是非常有用的。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/05/ch16 模板与泛型编程/" rel="next" title="">
+                <i class="fa fa-chevron-left"></i> 
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/05/ch08 IO库/" rel="prev" title="">
+                 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Jinghua Ren</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#第十一章-关联容器"><span class="nav-number">1.</span> <span class="nav-text">第十一章 关联容器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用关联容器"><span class="nav-number">1.1.</span> <span class="nav-text">使用关联容器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关联容器概述"><span class="nav-number">1.2.</span> <span class="nav-text">关联容器概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义关联容器"><span class="nav-number">1.2.1.</span> <span class="nav-text">定义关联容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关键字类型的要求"><span class="nav-number">1.2.2.</span> <span class="nav-text">关键字类型的要求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pair类型"><span class="nav-number">1.2.3.</span> <span class="nav-text">pair类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关联容器操作"><span class="nav-number">1.3.</span> <span class="nav-text">关联容器操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#关联容器迭代器"><span class="nav-number">1.3.1.</span> <span class="nav-text">关联容器迭代器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加元素"><span class="nav-number">1.3.2.</span> <span class="nav-text">添加元素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除元素"><span class="nav-number">1.3.3.</span> <span class="nav-text">删除元素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#map的下标操作"><span class="nav-number">1.3.4.</span> <span class="nav-text">map的下标操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#访问元素"><span class="nav-number">1.3.5.</span> <span class="nav-text">访问元素</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#无序容器"><span class="nav-number">1.4.</span> <span class="nav-text">无序容器</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jinghua Ren</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
